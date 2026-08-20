@@ -9,36 +9,33 @@ export function addKenneyButton(
   y: number,
   label: string,
   onClick: () => void,
-): Phaser.GameObjects.Container {
+): Phaser.GameObjects.NineSlice {
   const width = 280;
   const height = 72;
-  const slice = scene.add.nineslice(0, 0, "button-yellow", undefined, width, height, 48, 48, 28, 28);
+  const slice = scene.add.nineslice(x, y, "button-yellow", undefined, width, height, 48, 48, 28, 28);
+  slice.setInteractive({ useHandCursor: true });
   const text = scene.add
-    .text(0, -2, label, {
+    .text(x, y - 2, label, {
       fontFamily: FONT,
       fontSize: "22px",
       color: "#3A2A32",
     })
-    .setOrigin(0.5);
+    .setOrigin(0.5)
+    .setDepth(slice.depth + 1);
 
-  const container = scene.add.container(x, y, [slice, text]);
-  container.setSize(width, height);
-  // Phaser containers default their hit box to the top-left; offset it so the
-  // visible nine-slice and the clickable area share the same center.
-  container.setInteractive(
-    {
-      hitArea: new Phaser.Geom.Rectangle(-width / 2, -height / 2, width, height),
-      hitAreaCallback: Phaser.Geom.Rectangle.Contains,
-      useHandCursor: true,
-    },
-  );
-  container.on("pointerover", () => container.setScale(1.04));
-  container.on("pointerout", () => container.setScale(1));
-  container.on("pointerdown", () => {
+  slice.on("pointerover", () => {
+    slice.setScale(1.04);
+    text.setScale(1.04);
+  });
+  slice.on("pointerout", () => {
+    slice.setScale(1);
+    text.setScale(1);
+  });
+  slice.on("pointerdown", () => {
     scene.sound.play("click");
     onClick();
   });
-  return container;
+  return slice;
 }
 
 export function addKenneyPanel(
