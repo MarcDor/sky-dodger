@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 800" fill="none">
+  <defs>
+    <linearGradient id="sky" x1="240" y1="0" x2="240" y2="800" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#BFE6FF"/>
+      <stop offset="0.55" stop-color="#E9F4FF"/>
+      <stop offset="1" stop-color="#FFD9EA"/>
+    </linearGradient>
+  </defs>
+  <rect width="480" height="800" fill="url(#sky)"/>
+
+  <!-- doodle sun -->
+  <circle cx="392" cy="92" r="38" fill="#FFE58A" stroke="#3A2A32" stroke-width="3"/>
+  <circle cx="379" cy="84" r="6.5" fill="#3A2A32"/>
+  <circle cx="381.5" cy="82.5" r="2" fill="#FFFFFF"/>
+  <circle cx="405" cy="84" r="6.5" fill="#3A2A32"/>
+  <circle cx="407.5" cy="82.5" r="2" fill="#FFFFFF"/>
+  <ellipse cx="380" cy="98" rx="6" ry="3.5" fill="#FFB3C7" opacity="0.85"/>
+  <ellipse cx="404" cy="98" rx="6" ry="3.5" fill="#FFB3C7" opacity="0.85"/>
+  <path d="M380 108 C386 114, 398 114, 404 108" stroke="#3A2A32" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M392 46 C394 34, 398 28, 406 22" stroke="#3A2A32" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M428 78 C440 74, 448 68, 454 58" stroke="#3A2A32" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M428 112 C440 118, 446 128, 448 138" stroke="#3A2A32" stroke-width="2.4" stroke-linecap="round"/>
+
+  <!-- distant doodle clouds -->
+  <path d="M58 168 C72 148, 108 148, 122 166 C138 154, 168 158, 176 176 C196 174, 210 190, 198 206 C184 224, 86 226, 64 208 C42 192, 40 176, 58 168 Z" fill="#FFFFFF" stroke="#3A2A32" stroke-width="2.6" stroke-linejoin="round"/>
+  <circle cx="92" cy="184" r="4" fill="#3A2A32"/>
+  <circle cx="118" cy="184" r="4" fill="#3A2A32"/>
+  <path d="M96 196 C104 202, 112 202, 118 196" stroke="#3A2A32" stroke-width="2" stroke-linecap="round"/>
+  <ellipse cx="86" cy="194" rx="5" ry="3" fill="#FFC2D4" opacity="0.8"/>
+  <ellipse cx="126" cy="194" rx="5" ry="3" fill="#FFC2D4" opacity="0.8"/>
+
+  <path d="M286 210 C304 192, 338 194, 350 212 C368 204, 396 210, 404 226 C422 226, 432 244, 418 258 C400 274, 292 274, 276 256 C258 240, 262 220, 286 210 Z" fill="#FFF7FB" stroke="#3A2A32" stroke-width="2.6" stroke-linejoin="round"/>
+  <circle cx="328" cy="232" r="3.6" fill="#3A2A32"/>
+  <circle cx="352" cy="232" r="3.6" fill="#3A2A32"/>
+  <path d="M332 244 C340 248, 348 248, 354 244" stroke="#3A2A32" stroke-width="2" stroke-linecap="round"/>
+
+  <path d="M24 318 C40 300, 78 302, 90 320 C108 310, 138 316, 146 332 C164 332, 172 350, 156 362 C138 378, 40 378, 24 360 C8 344, 6 328, 24 318 Z" fill="#FFFFFF" stroke="#3A2A32" stroke-width="2.4" stroke-linejoin="round"/>
+
+  <!-- sparkles -->
+  <path d="M214 86 L218 98 L230 102 L218 106 L214 118 L210 106 L198 102 L210 98 Z" fill="#FFFFFF" stroke="#3A2A32" stroke-width="1.8" stroke-linejoin="round"/>
+  <path d="M140 430 L143 438 L151 441 L143 444 L140 452 L137 444 L129 441 L137 438 Z" fill="#FFE4F0" stroke="#3A2A32" stroke-width="1.6" stroke-linejoin="round"/>
+  <path d="M420 360 L423 368 L431 371 L423 374 L420 382 L417 374 L409 371 L417 368 Z" fill="#FFFFFF" stroke="#3A2A32" stroke-width="1.6" stroke-linejoin="round"/>
+
+  <!-- soft hills -->
+  <path d="M-20 640 C80 590, 170 610, 250 640 C330 672, 410 650, 500 620 L500 800 L-20 800 Z" fill="#D9F2C9" stroke="#3A2A32" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M-20 700 C90 670, 200 720, 320 690 C400 670, 460 700, 500 720 L500 800 L-20 800 Z" fill="#C7E8B5" stroke="#3A2A32" stroke-width="3" stroke-linejoin="round"/>
+</svg>
