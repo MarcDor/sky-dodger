@@ -23,7 +23,15 @@ export function addKenneyButton(
 
   const container = scene.add.container(x, y, [slice, text]);
   container.setSize(width, height);
-  container.setInteractive({ useHandCursor: true });
+  // Phaser containers default their hit box to the top-left; offset it so the
+  // visible nine-slice and the clickable area share the same center.
+  container.setInteractive(
+    {
+      hitArea: new Phaser.Geom.Rectangle(-width / 2, -height / 2, width, height),
+      hitAreaCallback: Phaser.Geom.Rectangle.Contains,
+      useHandCursor: true,
+    },
+  );
   container.on("pointerover", () => container.setScale(1.04));
   container.on("pointerout", () => container.setScale(1));
   container.on("pointerdown", () => {

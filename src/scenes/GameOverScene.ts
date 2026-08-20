@@ -47,7 +47,11 @@ export class GameOverScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    this.input.once("pointerdown", () => this.restart());
+    // Wait a beat so a pointer that was still down from gameplay cannot
+    // immediately dismiss Game Over.
+    this.time.delayedCall(350, () => {
+      this.input.once("pointerdown", () => this.restart());
+    });
   }
 
   private restart(): void {
