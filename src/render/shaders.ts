@@ -4,14 +4,16 @@ varying vec3 vWorldPos;
 varying vec2 vUv;
 varying vec3 vViewDir;
 uniform sampler2D uDamage;
+uniform sampler2D uStyle;
 uniform float uDisplace;
 
 void main() {
   vUv = uv;
+  float land = texture2D(uStyle, uv).r;
   vec4 D = texture2D(uDamage, uv);
   float crater = D.r;
   float rim = smoothstep(0.04, 0.16, crater) * (1.0 - smoothstep(0.2, 0.36, crater));
-  vec3 pos = position + normal * (rim * 0.038 - crater * 0.08);
+  vec3 pos = position + normal * (land * 0.024 + rim * 0.034 - crater * 0.08);
   vec4 world = modelMatrix * vec4(pos, 1.0);
   vWorldPos = world.xyz;
   vNormal = normalize(mat3(modelMatrix) * normal);
@@ -32,11 +34,11 @@ uniform vec3 uSunDir;
 uniform float uTime;
 
 float toonBand(float ndl) {
-  float w = fwidth(ndl) * 1.6;
-  float b0 = smoothstep(0.08 - w, 0.08 + w, ndl);
-  float b1 = smoothstep(0.38 - w, 0.38 + w, ndl);
-  float b2 = smoothstep(0.7 - w, 0.7 + w, ndl);
-  return mix(0.2, mix(0.42, mix(0.74, 1.02, b2), b1), b0);
+  float w = fwidth(ndl) * 1.25;
+  float b0 = smoothstep(0.02 - w, 0.02 + w, ndl);
+  float b1 = smoothstep(0.32 - w, 0.32 + w, ndl);
+  float b2 = smoothstep(0.68 - w, 0.68 + w, ndl);
+  return mix(0.34, mix(0.52, mix(0.78, 1.08, b2), b1), b0);
 }
 
 void main() {
@@ -51,14 +53,14 @@ void main() {
   float inland = texture2D(uStyle, vUv).g;
   float ocean = 1.0 - land;
 
-  vec3 shadowTint = vec3(0.28, 0.38, 0.62);
-  vec3 sunTint = vec3(1.08, 1.03, 0.9);
+  vec3 shadowTint = vec3(0.4, 0.46, 0.72);
+  vec3 sunTint = vec3(1.12, 1.06, 0.9);
   vec3 color = albedo * mix(shadowTint, sunTint, band);
 
   vec3 H = normalize(L + V);
-  float spec = pow(max(dot(N, H), 0.0), 70.0);
-  float specBlob = smoothstep(0.28, 0.5, spec);
-  color += specBlob * ocean * vec3(1.0, 0.97, 0.88) * 0.9;
+  float spec = pow(max(dot(N, H), 0.0), 160.0);
+  float specBlob = smoothstep(0.55, 0.82, spec);
+  color += specBlob * ocean * vec3(1.0, 0.98, 0.9) * 0.45;
 
   float rim = pow(1.0 - max(dot(N, V), 0.0), 2.6);
   color += vec3(0.65, 0.92, 1.0) * rim * 0.42 * (0.35 + 0.65 * band);

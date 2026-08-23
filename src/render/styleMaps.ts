@@ -25,25 +25,31 @@ interface Blob {
  * so they read as toy-Earth, not a photo and not camouflage noise.
  */
 const LAND: Blob[] = [
-  { u: 0.35, v: 0.13, rx: 0.045, ry: 0.05, k: 1.15 },
-  { u: 0.22, v: 0.3, rx: 0.13, ry: 0.11, k: 1.4 },
-  { u: 0.155, v: 0.36, rx: 0.07, ry: 0.085, k: 1.2 },
-  { u: 0.26, v: 0.4, rx: 0.055, ry: 0.06, k: 1.05 },
-  { u: 0.285, v: 0.56, rx: 0.06, ry: 0.11, k: 1.3 },
-  { u: 0.27, v: 0.7, rx: 0.04, ry: 0.09, k: 1.15 },
-  { u: 0.5, v: 0.28, rx: 0.07, ry: 0.055, k: 1.15 },
-  { u: 0.47, v: 0.255, rx: 0.028, ry: 0.024, k: 0.95 },
-  { u: 0.52, v: 0.48, rx: 0.095, ry: 0.13, k: 1.35 },
-  { u: 0.545, v: 0.62, rx: 0.05, ry: 0.085, k: 1.15 },
-  { u: 0.585, v: 0.64, rx: 0.02, ry: 0.04, k: 1.0 },
-  { u: 0.66, v: 0.3, rx: 0.16, ry: 0.11, k: 1.35 },
-  { u: 0.76, v: 0.32, rx: 0.09, ry: 0.085, k: 1.2 },
-  { u: 0.7, v: 0.42, rx: 0.07, ry: 0.075, k: 1.15 },
-  { u: 0.78, v: 0.5, rx: 0.065, ry: 0.05, k: 1.05 },
-  { u: 0.84, v: 0.36, rx: 0.03, ry: 0.038, k: 0.95 },
-  { u: 0.82, v: 0.67, rx: 0.07, ry: 0.048, k: 1.2 },
-  { u: 0.9, v: 0.75, rx: 0.028, ry: 0.028, k: 0.9 },
-  { u: 0.5, v: 0.935, rx: 0.48, ry: 0.07, k: 1.25 },
+  { u: 0.34, v: 0.12, rx: 0.04, ry: 0.042, k: 1.1 },
+  { u: 0.21, v: 0.3, rx: 0.12, ry: 0.1, k: 1.45 },
+  { u: 0.14, v: 0.34, rx: 0.06, ry: 0.07, k: 1.15 },
+  { u: 0.27, v: 0.36, rx: 0.05, ry: 0.055, k: 1.05 },
+  { u: 0.18, v: 0.42, rx: 0.035, ry: 0.04, k: 0.9 },
+  { u: 0.29, v: 0.54, rx: 0.055, ry: 0.1, k: 1.28 },
+  { u: 0.255, v: 0.68, rx: 0.032, ry: 0.08, k: 1.12 },
+  { u: 0.31, v: 0.6, rx: 0.03, ry: 0.05, k: 0.85 },
+  { u: 0.51, v: 0.27, rx: 0.065, ry: 0.048, k: 1.15 },
+  { u: 0.47, v: 0.25, rx: 0.024, ry: 0.02, k: 0.9 },
+  { u: 0.54, v: 0.32, rx: 0.03, ry: 0.03, k: 0.8 },
+  { u: 0.52, v: 0.47, rx: 0.09, ry: 0.12, k: 1.38 },
+  { u: 0.48, v: 0.52, rx: 0.04, ry: 0.06, k: 0.9 },
+  { u: 0.55, v: 0.62, rx: 0.045, ry: 0.075, k: 1.12 },
+  { u: 0.59, v: 0.64, rx: 0.018, ry: 0.036, k: 0.95 },
+  { u: 0.65, v: 0.29, rx: 0.14, ry: 0.095, k: 1.32 },
+  { u: 0.74, v: 0.26, rx: 0.07, ry: 0.055, k: 1.05 },
+  { u: 0.78, v: 0.34, rx: 0.08, ry: 0.07, k: 1.15 },
+  { u: 0.7, v: 0.4, rx: 0.06, ry: 0.06, k: 1.05 },
+  { u: 0.79, v: 0.5, rx: 0.05, ry: 0.04, k: 1.0 },
+  { u: 0.84, v: 0.36, rx: 0.026, ry: 0.032, k: 0.9 },
+  { u: 0.82, v: 0.66, rx: 0.065, ry: 0.042, k: 1.18 },
+  { u: 0.86, v: 0.64, rx: 0.03, ry: 0.022, k: 0.75 },
+  { u: 0.9, v: 0.74, rx: 0.022, ry: 0.024, k: 0.85 },
+  { u: 0.5, v: 0.95, rx: 0.38, ry: 0.045, k: 1.15 },
 ];
 
 const LAKES: Blob[] = [
@@ -85,11 +91,6 @@ function fieldAt(u: number, v: number): number {
   return blobField(wu, wv, LAND) - blobField(wu, wv, LAKES);
 }
 
-function hash(x: number, y: number): number {
-  const n = Math.sin(x * 127.1 + y * 311.7) * 43758.5453;
-  return n - Math.floor(n);
-}
-
 function mix(a: number, b: number, t: number): number {
   return a + (b - a) * t;
 }
@@ -110,7 +111,7 @@ export function measureLandCoverage(w = 256, h = 128): number {
     const v = (y + 0.5) / h;
     for (let x = 0; x < w; x += 1) {
       const u = (x + 0.5) / w;
-      if (smooth01(0.32, 0.46, fieldAt(u, v)) > 0.5) landPixels += 1;
+      if (smooth01(0.28, 0.42, fieldAt(u, v)) > 0.5) landPixels += 1;
     }
   }
   return landPixels / (w * h);
@@ -129,14 +130,13 @@ export function buildStylePack(): StylePack {
   const img = ctx.createImageData(w, h);
   const px = img.data;
 
-  const oceanDeep = rgb(0x0a6f78);
-  const ocean = rgb(0x14c4b6);
-  const oceanLite = rgb(0x7ee8d8);
-  const landCol = rgb(0x4db85a);
-  const landHi = rgb(0x73d46a);
-  const landLip = rgb(0x1f5c38);
-  const ice = rgb(0xe8f6f8);
-  const tree = rgb(0x1f7a3a);
+  const oceanDeep = rgb(0x0e8a86);
+  const ocean = rgb(0x2ad4c4);
+  const oceanLite = rgb(0x8af0de);
+  const landCol = rgb(0x4fd45a);
+  const landHi = rgb(0x7ae66a);
+  const landLip = rgb(0x1f6a38);
+  const ice = rgb(0xeef8fa);
 
   let landPixels = 0;
   for (let y = 0; y < h; y += 1) {
@@ -144,8 +144,8 @@ export function buildStylePack(): StylePack {
     for (let x = 0; x < w; x += 1) {
       const u = (x + 0.5) / w;
       const f = fieldAt(u, v);
-      const mask = smooth01(0.32, 0.46, f);
-      const inland = smooth01(0.4, 0.9, f);
+      const mask = smooth01(0.28, 0.42, f);
+      const inland = smooth01(0.36, 0.88, f);
       land[y * w + x] = mask;
       if (mask > 0.5) landPixels += 1;
 
@@ -155,31 +155,25 @@ export function buildStylePack(): StylePack {
       styleData[i + 2] = 0;
       styleData[i + 3] = 255;
 
-      const polarN = smooth01(0.14, 0.07, v);
-      const polarS = smooth01(0.86, 0.93, v);
-      const iceAmt = Math.max(polarN, polarS) * Math.max(mask, polarS * 0.85);
+      const polarN = smooth01(0.055, 0.02, v) * mask;
+      const polarS = smooth01(0.94, 0.975, v);
+      const iceAmt = Math.max(polarN, polarS * mask);
 
       const deep = 1 - smooth01(0.0, 0.38, f);
-      let r = mix(mix(ocean[0], oceanDeep[0], deep * 0.75), oceanLite[0], (1 - deep) * 0.25);
-      let g = mix(mix(ocean[1], oceanDeep[1], deep * 0.75), oceanLite[1], (1 - deep) * 0.25);
-      let b = mix(mix(ocean[2], oceanDeep[2], deep * 0.75), oceanLite[2], (1 - deep) * 0.2);
+      let r = mix(mix(ocean[0], oceanDeep[0], deep * 0.55), oceanLite[0], (1 - deep) * 0.18);
+      let g = mix(mix(ocean[1], oceanDeep[1], deep * 0.55), oceanLite[1], (1 - deep) * 0.18);
+      let b = mix(mix(ocean[2], oceanDeep[2], deep * 0.55), oceanLite[2], (1 - deep) * 0.12);
 
       const coast = mask * (1 - inland);
-      const grass = mix(landCol[0], landHi[0], inland * 0.55 + hash(x, y) * 0.15);
-      const grassG = mix(landCol[1], landHi[1], inland * 0.45);
-      const grassB = mix(landCol[2], landHi[2], inland * 0.25);
-      r = mix(r, mix(landLip[0], grass, inland), mask);
-      g = mix(g, mix(landLip[1], grassG, inland), mask);
-      b = mix(b, mix(landLip[2], grassB, inland), mask);
-      r = mix(r, landLip[0], coast * 0.65);
-      g = mix(g, landLip[1], coast * 0.65);
-      b = mix(b, landLip[2], coast * 0.65);
-
-      if (inland > 0.62 && hash(x * 0.37, y * 0.41) > 0.82 && v > 0.16 && v < 0.78) {
-        r = mix(r, tree[0], 0.85);
-        g = mix(g, tree[1], 0.85);
-        b = mix(b, tree[2], 0.85);
-      }
+      r = mix(r, mix(landLip[0], landCol[0], inland), mask);
+      g = mix(g, mix(landLip[1], landCol[1], inland), mask);
+      b = mix(b, mix(landLip[2], landCol[2], inland), mask);
+      r = mix(r, landLip[0], coast * 0.85);
+      g = mix(g, landLip[1], coast * 0.85);
+      b = mix(b, landLip[2], coast * 0.85);
+      r = mix(r, landHi[0], inland * 0.28);
+      g = mix(g, landHi[1], inland * 0.28);
+      b = mix(b, landHi[2], inland * 0.2);
 
       r = mix(r, ice[0], iceAmt);
       g = mix(g, ice[1], iceAmt);

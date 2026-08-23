@@ -7,7 +7,6 @@ import { createStars, createSun, createUfo } from "./render/props";
 import { aimBeam, createLaser } from "./render/laser";
 import { buildStylePack } from "./render/styleMaps";
 import { createToonRamp } from "./render/toon";
-import { createTrees } from "./render/trees";
 import { PAL } from "./render/palette";
 
 const SUN = new THREE.Vector3(-8, 3.2, 4.5);
@@ -39,7 +38,6 @@ export function mountCinder(host: HTMLElement): void {
   const pack = buildStylePack();
   const maxAniso = renderer.capabilities.getMaxAnisotropy();
   pack.albedo.anisotropy = maxAniso;
-  pack.clouds.anisotropy = maxAniso;
 
   const field = new DamageField();
   const damageTex = new THREE.DataTexture(
@@ -58,8 +56,7 @@ export function mountCinder(host: HTMLElement): void {
   const globe = createEarth(pack, damageTex);
   const planet = new THREE.Group();
   const ramp = createToonRamp();
-  const trees = createTrees(pack, ramp);
-  planet.add(globe.outline, globe.earth, trees, globe.clouds, globe.atmosphere);
+  planet.add(globe.outline, globe.earth, globe.atmosphere);
   scene.add(planet);
   scene.add(createStars());
   scene.add(createSun());
@@ -70,6 +67,7 @@ export function mountCinder(host: HTMLElement): void {
   scene.add(key);
 
   const sat = createUfo(ramp);
+  sat.scale.setScalar(1.75);
   sat.position.set(1.55, 0.62, 1.85);
   scene.add(sat);
 
@@ -101,9 +99,7 @@ export function mountCinder(host: HTMLElement): void {
     audio?.stop();
   });
 
-  const crustFill = document.getElementById("crustFill");
   const crustVal = document.getElementById("crustVal");
-  const heatFill = document.getElementById("heatFill");
   const heatVal = document.getElementById("heatVal");
   const goldVal = document.getElementById("goldVal");
   const stats = document.getElementById("stats");
@@ -119,7 +115,6 @@ export function mountCinder(host: HTMLElement): void {
     globe.uniforms.sunDir.value.copy(sunDir);
 
     planet.rotation.y += dt * 0.045;
-    globe.clouds.rotation.y += dt * 0.018;
 
     satAim.copy(camera.position).multiplyScalar(0.12);
     sat.position.lerp(new THREE.Vector3(1.35, 0.48, 1.7).add(satAim), 0.08);
@@ -159,9 +154,7 @@ export function mountCinder(host: HTMLElement): void {
     const aim = hit?.uv ? field.sample(hit.uv.x, hit.uv.y) : { damage: 0, heat: 0, crack: 0 };
     const wound = aim.damage;
     const heat = aim.heat;
-    if (crustFill) crustFill.style.width = `${(wound * 100).toFixed(1)}%`;
     if (crustVal) crustVal.textContent = `${(wound * 100).toFixed(0)}%`;
-    if (heatFill) heatFill.style.width = `${Math.min(100, heat * 100).toFixed(1)}%`;
     if (heatVal) heatVal.textContent = `${Math.min(100, heat * 100).toFixed(0)}%`;
     if (goldVal) goldVal.textContent = Math.floor(field.totalEnergy * 18).toLocaleString("de-DE");
     setDial(woundDial, wound);
