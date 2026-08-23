@@ -93,6 +93,22 @@ export async function mountLockstep(host: HTMLElement): Promise<void> {
   const labels = createLabels();
   for (const text of Object.values(labels)) gfx.texts.addChild(text);
 
+  const slotLabels: Text[] = [];
+  function ensureSlotLabels(count: number): void {
+    while (slotLabels.length < count) {
+      const text = new Text({
+        text: "",
+        style: { fontFamily: FONT, fontSize: 11, fill: COLORS.textDim, fontWeight: "500" },
+      });
+      text.anchor.set(0.5);
+      gfx.texts.addChild(text);
+      slotLabels.push(text);
+    }
+    for (let i = 0; i < slotLabels.length; i += 1) {
+      slotLabels[i].visible = i < count;
+    }
+  }
+
   function level(): LevelDefinition {
     return CAMPAIGN[levelIndex];
   }
@@ -332,10 +348,11 @@ export async function mountLockstep(host: HTMLElement): Promise<void> {
     drawPanel(gfx.hud, 18, 18, 196, 70);
     drawPanel(gfx.hud, w / 2 - 210, 16, 420, 70);
     drawPanel(gfx.hud, 18, 98, 196, h - 196);
-    drawPanel(gfx.hud, w - 214, 98, 196, 280);
+    drawPanel(gfx.hud, w - 214, 98, 196, 292);
     drawPanel(gfx.hud, 18, h - 92, w - 36, 74);
 
     drawRing(gfx.ring, cx, cy, ringR, level().S, layout.tape, run.t);
+    placeSlotLabels(cx, cy, ringR, level().S);
     drawStations(cx, cy, ringR);
     drawWorkpiece(cx, cy, ringR);
     drawWave(w, h);
@@ -381,6 +398,15 @@ export async function mountLockstep(host: HTMLElement): Promise<void> {
     g.fill({ color: COLORS.groove });
     g.ellipse(cx - 6, cy - 8, 14, 7);
     g.fill({ color: COLORS.brassHi, alpha: 0.25 });
+  }
+
+  function placeSlotLabels(cx: number, cy: number, r: number, S: number): void {
+    ensureSlotLabels(S);
+    for (let i = 0; i < S; i += 1) {
+      const a = slotAngle(i, S);
+      slotLabels[i].text = String(i);
+      slotLabels[i].position.set(cx + Math.cos(a) * (r + 30), cy + Math.sin(a) * (r + 30));
+    }
   }
 
   function drawStations(cx: number, cy: number, r: number): void {
@@ -498,9 +524,9 @@ export async function mountLockstep(host: HTMLElement): Promise<void> {
     labels.scores.text = `CYCLES  ${run.scores.cycles}      AREA  ${run.scores.area}      TAPE  ${run.scores.tapeLength}`;
     labels.scores.position.set(w / 2, 40);
     labels.streak.text = `Serie  ${run.consecutiveSuccesses} / ${lv.successStreak}`;
-    labels.streak.position.set(w - 116, 128);
+    labels.streak.position.set(w - 116, 112);
     labels.target.text = `Ziel\n${describeTarget(lv.target)}\n\nJetzt\n${describeWorkpiece(wp)}`;
-    labels.target.position.set(w - 116, 168);
+    labels.target.position.set(w - 116, 148);
     labels.controls.text = playing ? "Pause" : "Play";
     labels.step.text = "Schritt";
     labels.speed.text = `${SPEEDS[speedIndex]}×`;
@@ -512,13 +538,13 @@ export async function mountLockstep(host: HTMLElement): Promise<void> {
     labels.prev.position.set(w - 136, 38);
     labels.next.position.set(w - 64, 38);
     labels.waveCaption.text = "Tape";
-    labels.waveCaption.position.set(318, h - 78);
+    labels.waveCaption.position.set(360, h - 86);
     labels.best.text = save.best[lv.id]
       ? `Best  C${save.best[lv.id].cycles} · A${save.best[lv.id].area}`
       : save.completed.includes(lv.id)
         ? "Gelöst"
         : "Ungelöst";
-    labels.best.position.set(w - 116, 348);
+    labels.best.position.set(w - 116, 352);
 
     const pal = paletteRects();
     const palLabels = [labels.pal0, labels.pal1, labels.pal2, labels.pal3];
@@ -602,20 +628,27 @@ export async function mountLockstep(host: HTMLElement): Promise<void> {
       text.anchor.set(0.5);
       return text;
     };
+    const topCenter = (text: Text) => {
+      text.anchor.set(0.5, 0);
+      return text;
+    };
     return {
       title: new Text({ text: "LOCKSTEP", style: { ...style(26, COLORS.tapeOn), letterSpacing: 3 } }),
       subtitle: new Text({ text: "", style: style(16, COLORS.textDim, "500") }),
       brief: new Text({ text: "", style: { ...style(13, COLORS.textDim, "400"), wordWrap: true, wordWrapWidth: 170, align: "left" } }),
       scores: center(new Text({ text: "", style: style(16, COLORS.text) })),
-      streak: center(new Text({ text: "", style: style(16, COLORS.amber) })),
-      target: center(new Text({ text: "", style: { ...style(13, COLORS.text, "400"), align: "center", lineHeight: 20 } })),
+      streak: topCenter(new Text({ text: "", style: style(16, COLORS.amber) })),
+      target: topCenter(new Text({
+        text: "",
+        style: { ...style(13, COLORS.text, "400"), align: "center", lineHeight: 18, wordWrap: true, wordWrapWidth: 176 },
+      })),
       controls: center(new Text({ text: "Play", style: style(14, COLORS.text) })),
       step: center(new Text({ text: "Schritt", style: style(14, COLORS.text) })),
       speed: center(new Text({ text: "1×", style: style(14, COLORS.text) })),
       prev: center(new Text({ text: "◀", style: style(16) })),
       next: center(new Text({ text: "▶", style: style(16) })),
-      waveCaption: center(new Text({ text: "Tape", style: style(12, COLORS.textDim, "500") })),
-      best: center(new Text({ text: "", style: style(12, COLORS.textDim, "400") })),
+      waveCaption: new Text({ text: "Tape", style: { ...style(12, COLORS.textDim, "500"), align: "left" } }),
+      best: topCenter(new Text({ text: "", style: style(12, COLORS.textDim, "400") })),
       overlayTitle: center(new Text({ text: "", style: style(28, COLORS.tapeOn) })),
       overlayBody: center(new Text({ text: "", style: style(16, COLORS.text) })),
       overlayRetry: center(new Text({ text: "", style: style(15) })),
@@ -663,9 +696,9 @@ function waveformLayout(
 ): { S: number; x0: number; y0: number; bw: number } {
   return {
     S,
-    x0: 330,
-    y0: h - 70,
-    bw: Math.max(10, (w - 360) / S - 4),
+    x0: 360,
+    y0: h - 68,
+    bw: Math.max(10, (w - 390) / S - 4),
   };
 }
 
