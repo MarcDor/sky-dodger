@@ -1,7 +1,7 @@
 {
-  "name": "sky-dodger",
+  "name": "cinder",
   "version": "0.1.0",
-  "description": "Sky Dodger — a kawaii doodle arcade game built with Phaser 3.",
+  "description": "Cinder — flat incremental. UFOs chew a cartoon planet.",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -12,7 +12,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "phaser": "3.90.0"
+    "pixi.js": "^8.20.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",
