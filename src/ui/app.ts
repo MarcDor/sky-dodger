@@ -75,6 +75,7 @@ export async function mountLockstep(host: HTMLElement): Promise<void> {
     wave: new Graphics(),
     overlay: new Graphics(),
     texts: new Container(),
+    overlayTexts: new Container(),
   };
 
   world.addChild(
@@ -88,10 +89,14 @@ export async function mountLockstep(host: HTMLElement): Promise<void> {
     gfx.wave,
     gfx.texts,
     gfx.overlay,
+    gfx.overlayTexts,
   );
 
   const labels = createLabels();
-  for (const text of Object.values(labels)) gfx.texts.addChild(text);
+  const overlayKeys = new Set(["overlayTitle", "overlayBody", "overlayRetry", "overlayNext"]);
+  for (const [key, text] of Object.entries(labels)) {
+    (overlayKeys.has(key) ? gfx.overlayTexts : gfx.texts).addChild(text);
+  }
 
   const slotLabels: Text[] = [];
   function ensureSlotLabels(count: number): void {
