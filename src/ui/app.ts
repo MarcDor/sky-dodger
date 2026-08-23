@@ -387,7 +387,7 @@ export async function mountLockstep(host: HTMLElement): Promise<void> {
     for (let i = 0; i < S; i += 1) {
       const a = slotAngle(i, S);
       slotLabels[i].text = String(i);
-      slotLabels[i].position.set(cx + Math.cos(a) * (r + 34), cy + Math.sin(a) * (r + 34));
+      slotLabels[i].position.set(cx + Math.cos(a) * (r + 42), cy + Math.sin(a) * (r + 42));
     }
   }
 
@@ -469,8 +469,8 @@ export async function mountLockstep(host: HTMLElement): Promise<void> {
     const from = slotAngle(prevSlot, S);
     const to = slotAngle(displaySlot, S);
     const a = lerpAngle(from, to, ease(anim));
-    const x = cx + Math.cos(a) * (r - 28);
-    const y = cy + Math.sin(a) * (r - 28);
+    const x = cx + Math.cos(a) * (r - 20);
+    const y = cy + Math.sin(a) * (r - 20);
     drawWorkpiecePlate(gfx.piece, x, y, wp.holes, wp.rivets, wp.stamped);
   }
 

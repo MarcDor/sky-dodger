@@ -12,17 +12,17 @@ export interface StationLook {
 
 export function drawStationMachine(g: Graphics, type: StationType, look: StationLook): void {
   const { body, edge, fired, failed, muted } = look;
-  g.roundRect(-22, 20, 44, 10, 3);
+  g.roundRect(-24, 22, 48, 12, 3);
   g.fill({ color: COLORS.brassLo });
-  g.roundRect(-18, 22, 36, 5, 2);
-  g.fill({ color: COLORS.brassMid });
+  g.roundRect(-18, 24, 36, 6, 2);
+  g.fill({ color: COLORS.brass });
 
-  g.roundRect(-26, -22, 52, 44, 8);
-  g.fill({ color: COLORS.slateLo });
-  g.roundRect(-24, -24, 48, 42, 8);
+  g.roundRect(-30, -26, 60, 50, 8);
+  g.fill({ color: COLORS.brassLo });
+  g.roundRect(-27, -28, 54, 48, 8);
   g.fill({ color: body });
-  g.roundRect(-24, -24, 48, 42, 8);
-  g.stroke({ width: failed ? 3 : 1.6, color: edge });
+  g.roundRect(-27, -28, 54, 48, 8);
+  g.stroke({ width: failed ? 3 : 2, color: edge });
 
   if (!fired) {
     g.ellipse(-7, -14, 14, 6);

@@ -30,17 +30,19 @@ export function drawWorkshopFloor(
   g.ellipse(spotX, spotY, r * 1.15, r * 0.55);
   g.fill({ color: COLORS.brassHi, alpha: 0.05 });
 
-  g.ellipse(cx + 6, cy + 22, r + 92, r * 0.42);
-  g.fill({ color: 0x000000, alpha: 0.38 });
+  g.ellipse(cx + 8, cy + 28, r + 100, r * 0.46);
+  g.fill({ color: 0x000000, alpha: 0.45 });
 
+  g.circle(cx, cy, r + 96);
+  g.fill({ color: COLORS.brassLo, alpha: 0.55 });
+  g.circle(cx, cy, r + 92);
+  g.fill({ color: COLORS.floorPlate });
   g.circle(cx, cy, r + 88);
-  g.fill({ color: COLORS.floorPlate });
-  g.circle(cx, cy, r + 84);
   g.fill({ color: COLORS.floorPlateHi });
-  g.circle(cx, cy, r + 72);
+  g.circle(cx, cy, r + 76);
   g.fill({ color: COLORS.floorPlate });
-  g.circle(cx, cy, r + 70);
-  g.stroke({ width: 2, color: COLORS.brassLo, alpha: 0.55 });
+  g.circle(cx, cy, r + 74);
+  g.stroke({ width: 3, color: COLORS.brassMid, alpha: 0.65 });
 }
 
 export function drawInstrument(g: Graphics, x: number, y: number, w: number, h: number): void {
@@ -102,33 +104,33 @@ export function drawMachineRing(
     g.stroke({ width: 1, color: COLORS.brassLo, alpha: 0.22 });
   }
 
-  g.circle(cx, cy, r + 22);
+  g.circle(cx, cy, r + 28);
   g.fill({ color: COLORS.brassLo });
-  g.circle(cx, cy, r + 19);
+  g.circle(cx, cy, r + 24);
   g.fill({ color: COLORS.brass });
-  g.circle(cx, cy, r + 14);
+  g.circle(cx, cy, r + 16);
   g.fill({ color: COLORS.brassMid });
-  g.circle(cx, cy, r + 8);
+  g.circle(cx, cy, r - 8);
   g.fill({ color: COLORS.brassLo });
-  g.circle(cx, cy, r - 4);
+  g.circle(cx, cy, r - 16);
+  g.fill({ color: COLORS.workpieceLo, alpha: 0.35 });
+  g.circle(cx, cy, r - 38);
   g.fill({ color: COLORS.groove });
-  g.circle(cx, cy, r - 26);
-  g.fill({ color: COLORS.floorPlate });
-  g.circle(cx, cy, r - 28);
-  g.stroke({ width: 1.5, color: COLORS.brassLo, alpha: 0.7 });
+  g.circle(cx, cy, r - 40);
+  g.stroke({ width: 2, color: COLORS.brassMid, alpha: 0.8 });
 
-  const hx = cx - r * 0.2 + Math.cos(mood / 1800) * r * 0.07;
-  const hy = cy - r * 0.26 + Math.sin(mood / 2000) * r * 0.04;
-  g.ellipse(hx, hy, r * 0.58, r * 0.2);
-  g.fill({ color: COLORS.brassHi, alpha: 0.16 });
+  const hx = cx - r * 0.18 + Math.cos(mood / 1800) * r * 0.06;
+  const hy = cy - r * 0.22 + Math.sin(mood / 2000) * r * 0.04;
+  g.ellipse(hx, hy, r * 0.7, r * 0.24);
+  g.fill({ color: COLORS.brassHi, alpha: 0.2 });
 
   for (let i = 0; i < S; i += 1) {
     const a0 = slotAngle(i - 0.46, S);
     const a1 = slotAngle(i + 0.46, S);
     const mid = slotAngle(i, S);
     const on = tape[i];
-    const inner = r - 2;
-    const outer = on ? r + 11 : r + 8;
+    const inner = r - 6;
+    const outer = on ? r + 16 : r + 10;
     g.moveTo(cx + Math.cos(a0) * inner, cy + Math.sin(a0) * inner);
     g.arc(cx, cy, inner, a0, a1, false);
     g.lineTo(cx + Math.cos(a1) * outer, cy + Math.sin(a1) * outer);
@@ -136,17 +138,17 @@ export function drawMachineRing(
     g.closePath();
     g.fill({ color: on ? COLORS.tapeOn : COLORS.tapeOff, alpha: on ? 0.96 : 0.7 });
     if (on) {
-      const hi = r + 8;
-      g.moveTo(cx + Math.cos(a0) * (r + 4), cy + Math.sin(a0) * (r + 4));
-      g.arc(cx, cy, r + 4, a0, a1, false);
+      const hi = r + 13;
+      g.moveTo(cx + Math.cos(a0) * (r + 6), cy + Math.sin(a0) * (r + 6));
+      g.arc(cx, cy, r + 6, a0, a1, false);
       g.lineTo(cx + Math.cos(a1) * hi, cy + Math.sin(a1) * hi);
       g.arc(cx, cy, hi, a1, a0, true);
       g.closePath();
-      g.fill({ color: COLORS.brassHi, alpha: 0.28 });
+      g.fill({ color: COLORS.brassHi, alpha: 0.32 });
     }
 
-    const bx = cx + Math.cos(mid) * (r + 17);
-    const by = cy + Math.sin(mid) * (r + 17);
+    const bx = cx + Math.cos(mid) * (r + 22);
+    const by = cy + Math.sin(mid) * (r + 22);
     g.circle(bx, by, 3.4);
     g.fill({ color: COLORS.brass });
     g.circle(bx, by, 1.6);
