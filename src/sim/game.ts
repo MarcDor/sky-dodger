@@ -183,7 +183,7 @@ function ageFx(game: Game, t: number): void {
 function fire(game: Game, view: View, ufo: Ufo): void {
   const from = ufoPos(ufo, view, game.time);
   const a = Math.random() * Math.PI * 2;
-  const rad = view.r * (0.2 + Math.sqrt(Math.random()) * 0.62);
+  const rad = view.r * (0.58 + Math.random() * 0.38);
   const x = Math.cos(a) * rad;
   const y = Math.sin(a) * rad;
   const hitX = view.cx + x;
