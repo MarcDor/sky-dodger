@@ -18,8 +18,19 @@ import {
 import { CAMPAIGN, nextLevel } from "../levels/campaign";
 import { describeTarget, describeWorkpiece } from "../core/workpiece";
 import { loadSave, recordSolve, type SaveData } from "../save/storage";
-import { drawSparks, drawStationGlyph } from "./icons";
-import { COLORS, FONT, STATION_META } from "./theme";
+import {
+  drawCamWave,
+  drawEmptyMount,
+  drawGauge,
+  drawInstrument,
+  drawMachineRing,
+  drawMetalButton,
+  drawWorkshopFloor,
+  drawWorkpiecePlate,
+  slotAngle,
+} from "./draw";
+import { drawSparks, drawStationGlyph, drawStationMachine } from "./icons";
+import { COLORS, FONT, MONO, STATION_META } from "./theme";
 
 const BEAT_MS = 420;
 const SPEEDS = [1, 2, 4] as const;
@@ -63,6 +74,7 @@ export async function mountLockstep(host: HTMLElement): Promise<void> {
   let flash: FireEvent[] = [];
   let flashAge = 0;
   let overlayOpen = false;
+  let mood = 0;
 
   const gfx = {
     bg: new Graphics(),
@@ -103,7 +115,7 @@ export async function mountLockstep(host: HTMLElement): Promise<void> {
     while (slotLabels.length < count) {
       const text = new Text({
         text: "",
-        style: { fontFamily: FONT, fontSize: 11, fill: COLORS.textDim, fontWeight: "500" },
+        style: { fontFamily: FONT, fontSize: 11, fill: COLORS.brass, fontWeight: "600" },
       });
       text.anchor.set(0.5);
       gfx.texts.addChild(text);
@@ -191,10 +203,6 @@ export async function mountLockstep(host: HTMLElement): Promise<void> {
     return { w, h, cx, cy, ringR };
   }
 
-  function slotAngle(slot: number, S: number): number {
-    return -Math.PI / 2 + (slot / S) * Math.PI * 2;
-  }
-
   function slotFromEvent(e: FederatedPointerEvent): { slot: number; zone: "tape" | "station" | "none" } {
     const { cx, cy, ringR } = layoutSlots();
     const dx = e.global.x - cx;
@@ -204,8 +212,8 @@ export async function mountLockstep(host: HTMLElement): Promise<void> {
     let ang = Math.atan2(dy, dx) + Math.PI / 2;
     if (ang < 0) ang += Math.PI * 2;
     const slot = Math.round((ang / (Math.PI * 2)) * S) % S;
-    if (dist >= ringR * 0.62 && dist <= ringR * 1.08) return { slot, zone: "tape" };
-    if (dist > ringR * 1.08 && dist <= ringR * 1.62) return { slot, zone: "station" };
+    if (dist >= ringR * 0.55 && dist <= ringR * 1.14) return { slot, zone: "tape" };
+    if (dist > ringR * 1.14 && dist <= ringR * 1.95) return { slot, zone: "station" };
     return { slot, zone: "none" };
   }
 
@@ -232,7 +240,7 @@ export async function mountLockstep(host: HTMLElement): Promise<void> {
     const wave = waveformLayout(w, h, level().S);
     for (let i = 0; i < wave.S; i += 1) {
       const x = wave.x0 + i * (wave.bw + 4);
-      if (hitButton(e.global.x, e.global.y, x, wave.y0, wave.bw, 36)) {
+      if (hitButton(e.global.x, e.global.y, x, wave.y0 - 8, wave.bw, 50)) {
         toggleTape(i);
         return;
       }
@@ -326,6 +334,7 @@ export async function mountLockstep(host: HTMLElement): Promise<void> {
   app.ticker.add((ticker) => {
     const dt = ticker.deltaMS;
     flashAge += dt;
+    mood += dt;
     anim = Math.min(1, anim + dt / (BEAT_MS / SPEEDS[speedIndex]));
     if (playing) {
       acc += dt * SPEEDS[speedIndex];
@@ -344,19 +353,27 @@ export async function mountLockstep(host: HTMLElement): Promise<void> {
     world.hitArea = new Rectangle(0, 0, w, h);
 
     gfx.bg.clear();
-    gfx.bg.rect(0, 0, w, h);
-    gfx.bg.fill({ color: COLORS.bg });
-    gfx.bg.circle(cx, cy, ringR * 2.4);
-    gfx.bg.fill({ color: COLORS.bgLift, alpha: 0.55 });
+    drawWorkshopFloor(gfx.bg, w, h, cx, cy, ringR, mood);
 
     gfx.hud.clear();
-    drawPanel(gfx.hud, 18, 18, 196, 70);
-    drawPanel(gfx.hud, w / 2 - 210, 16, 420, 70);
-    drawPanel(gfx.hud, 18, 98, 196, h - 196);
-    drawPanel(gfx.hud, w - 214, 98, 196, 292);
-    drawPanel(gfx.hud, 18, h - 92, w - 36, 74);
+    drawInstrument(gfx.hud, 18, 18, 196, 70);
+    drawInstrument(gfx.hud, w / 2 - 216, 14, 432, 78);
+    drawInstrument(gfx.hud, 18, 98, 196, h - 196);
+    drawInstrument(gfx.hud, w - 214, 98, 196, 292);
+    drawInstrument(gfx.hud, 18, h - 96, w - 36, 80);
 
-    drawRing(gfx.ring, cx, cy, ringR, level().S, layout.tape, run.t);
+    gfx.ring.clear();
+    drawMachineRing(
+      gfx.ring,
+      cx,
+      cy,
+      ringR,
+      level().S,
+      layout.tape,
+      run.t,
+      mood,
+      Boolean(run.workpiece || playing),
+    );
     placeSlotLabels(cx, cy, ringR, level().S);
     drawStations(cx, cy, ringR);
     drawWorkpiece(cx, cy, ringR);
@@ -365,52 +382,12 @@ export async function mountLockstep(host: HTMLElement): Promise<void> {
     drawOverlay(w, h);
   }
 
-  function drawRing(g: Graphics, cx: number, cy: number, r: number, S: number, tape: boolean[], t: number): void {
-    g.clear();
-    g.circle(cx, cy, r + 18);
-    g.fill({ color: COLORS.brassLo });
-    g.circle(cx, cy, r + 16);
-    g.fill({ color: COLORS.brass });
-    g.circle(cx, cy, r + 2);
-    g.fill({ color: COLORS.brassMid });
-    g.circle(cx, cy, r - 10);
-    g.fill({ color: COLORS.groove });
-    g.ellipse(cx - r * 0.18, cy - r * 0.22, r * 0.55, r * 0.22);
-    g.fill({ color: COLORS.brassHi, alpha: 0.13 });
-
-    for (let i = 0; i < S; i += 1) {
-      const a0 = slotAngle(i - 0.5, S);
-      const a1 = slotAngle(i + 0.5, S);
-      const mid = slotAngle(i, S);
-      const on = tape[i];
-      const inner = r - 4;
-      const outer = r + 10;
-      g.moveTo(cx + Math.cos(a0) * inner, cy + Math.sin(a0) * inner);
-      g.arc(cx, cy, inner, a0, a1, false);
-      g.lineTo(cx + Math.cos(a1) * outer, cy + Math.sin(a1) * outer);
-      g.arc(cx, cy, outer, a1, a0, true);
-      g.closePath();
-      g.fill({ color: on ? COLORS.tapeOn : COLORS.tapeOff, alpha: on ? 0.95 : 0.55 });
-      if (t % S === i && (run.workpiece || playing)) {
-        g.circle(cx + Math.cos(mid) * (r + 3), cy + Math.sin(mid) * (r + 3), 5);
-        g.fill({ color: COLORS.amber, alpha: 0.9 });
-      }
-    }
-
-    g.circle(cx, cy, 36);
-    g.fill({ color: COLORS.brassMid });
-    g.circle(cx, cy, 28);
-    g.fill({ color: COLORS.groove });
-    g.ellipse(cx - 6, cy - 8, 14, 7);
-    g.fill({ color: COLORS.brassHi, alpha: 0.25 });
-  }
-
   function placeSlotLabels(cx: number, cy: number, r: number, S: number): void {
     ensureSlotLabels(S);
     for (let i = 0; i < S; i += 1) {
       const a = slotAngle(i, S);
       slotLabels[i].text = String(i);
-      slotLabels[i].position.set(cx + Math.cos(a) * (r + 30), cy + Math.sin(a) * (r + 30));
+      slotLabels[i].position.set(cx + Math.cos(a) * (r + 34), cy + Math.sin(a) * (r + 34));
     }
   }
 
@@ -422,16 +399,15 @@ export async function mountLockstep(host: HTMLElement): Promise<void> {
 
     for (let i = 0; i < S; i += 1) {
       const a = slotAngle(i, S);
-      const x = cx + Math.cos(a) * (r + 58);
-      const y = cy + Math.sin(a) * (r + 58);
-      gfx.stations.circle(x, y, 5);
-      gfx.stations.fill({ color: COLORS.panelEdge, alpha: 0.7 });
+      const x = cx + Math.cos(a) * (r + 74);
+      const y = cy + Math.sin(a) * (r + 74);
+      if (!layout.stations.some((s) => s.position === i)) drawEmptyMount(gfx.stations, x, y);
     }
 
     for (const station of layout.stations) {
       const a = slotAngle(station.position, S);
-      const x = cx + Math.cos(a) * (r + 58);
-      const y = cy + Math.sin(a) * (r + 58);
+      const x = cx + Math.cos(a) * (r + 74);
+      const y = cy + Math.sin(a) * (r + 74);
       const ev = flash.find((e) => e.position === station.position && flashAge < 220);
       const muted = !layout.tape[station.position];
       let body = muted ? COLORS.slateLo : COLORS.slate;
@@ -443,31 +419,43 @@ export async function mountLockstep(host: HTMLElement): Promise<void> {
         body = COLORS.slateLo;
         edge = COLORS.fail;
       }
-      gfx.stations.roundRect(x - 28, y - 28, 56, 56, 10);
-      gfx.stations.fill({ color: body });
-      gfx.stations.roundRect(x - 28, y - 28, 56, 56, 10);
-      gfx.stations.stroke({ width: ev?.outcome === "failed" ? 3 : 1.5, color: edge });
-      if (!ev) {
-        gfx.stations.ellipse(x - 8, y - 12, 16, 7);
-        gfx.stations.fill({ color: 0xffffff, alpha: muted ? 0.04 : 0.1 });
-      }
-      const glyph = new Graphics();
-      drawStationGlyph(glyph, station.type, ev?.outcome === "fired" ? COLORS.groove : COLORS.text);
-      glyph.position.set(x, y);
-      gfx.glyphs.addChild(glyph);
+      gfx.stations.moveTo(cx + Math.cos(a) * (r + 20), cy + Math.sin(a) * (r + 20));
+      gfx.stations.lineTo(x, y);
+      gfx.stations.stroke({ width: 5, color: COLORS.brassLo, alpha: 0.85 });
+      gfx.stations.moveTo(cx + Math.cos(a) * (r + 20), cy + Math.sin(a) * (r + 20));
+      gfx.stations.lineTo(x, y);
+      gfx.stations.stroke({ width: 2, color: COLORS.brass, alpha: 0.7 });
+
+      const machine = new Graphics();
+      drawStationMachine(machine, station.type, {
+        body,
+        edge,
+        fired: ev?.outcome === "fired",
+        failed: ev?.outcome === "failed",
+        muted,
+      });
+      machine.position.set(x, y);
+      machine.rotation = a + Math.PI / 2;
+      gfx.glyphs.addChild(machine);
       if (ev?.outcome === "fired") {
         const sparks = new Graphics();
         drawSparks(sparks, station.position + run.t);
         sparks.position.set(x, y);
+        sparks.rotation = a + Math.PI / 2;
         gfx.glyphs.addChild(sparks);
       }
     }
 
     if (drag) {
       const ghost = new Graphics();
-      ghost.roundRect(-28, -28, 56, 56, 10);
-      ghost.fill({ color: COLORS.amber, alpha: 0.35 });
-      drawStationGlyph(ghost, drag.type, COLORS.amberHi);
+      drawStationMachine(ghost, drag.type, {
+        body: COLORS.amber,
+        edge: COLORS.amberHi,
+        fired: false,
+        failed: false,
+        muted: false,
+      });
+      ghost.alpha = 0.7;
       ghost.position.set(pointer.x, pointer.y);
       gfx.glyphs.addChild(ghost);
     }
@@ -483,40 +471,13 @@ export async function mountLockstep(host: HTMLElement): Promise<void> {
     const a = lerpAngle(from, to, ease(anim));
     const x = cx + Math.cos(a) * (r - 28);
     const y = cy + Math.sin(a) * (r - 28);
-    gfx.piece.roundRect(x - 16, y - 16, 32, 32, 8);
-    gfx.piece.fill({ color: COLORS.workpiece });
-    gfx.piece.roundRect(x - 16, y - 16, 32, 32, 8);
-    gfx.piece.stroke({ width: 2, color: COLORS.brassLo });
-    gfx.piece.ellipse(x - 5, y - 7, 10, 5);
-    gfx.piece.fill({ color: 0xffffff, alpha: 0.28 });
-    wp.holes.forEach((hole, i) => {
-      gfx.piece.circle(x - 8 + i * 10, y + 4, 2 + hole.size);
-      gfx.piece.fill({ color: COLORS.groove });
-    });
-    if (wp.rivets > 0) {
-      gfx.piece.roundRect(x - 7, y - 2, 14, 3, 1);
-      gfx.piece.fill({ color: COLORS.brass });
-    }
-    if (wp.stamped) {
-      gfx.piece.roundRect(x + 8, y - 10, 6, 6, 1);
-      gfx.piece.fill({ color: COLORS.amber });
-    }
+    drawWorkpiecePlate(gfx.piece, x, y, wp.holes, wp.rivets, wp.stamped);
   }
 
   function drawWave(w: number, h: number): void {
     gfx.wave.clear();
     const { S, x0, y0, bw } = waveformLayout(w, h, level().S);
-    for (let i = 0; i < S; i += 1) {
-      const x = x0 + i * (bw + 4);
-      const on = layout.tape[i];
-      const playhead = run.t % S === i;
-      gfx.wave.roundRect(x, y0, bw, 36, 4);
-      gfx.wave.fill({ color: on ? COLORS.tapeOn : COLORS.tapeOff });
-      if (playhead) {
-        gfx.wave.roundRect(x, y0 - 6, bw, 48, 4);
-        gfx.wave.stroke({ width: 2, color: COLORS.amber });
-      }
-    }
+    drawCamWave(gfx.wave, x0, y0, bw, S, layout.tape, run.t % S);
   }
 
   function drawHudText(w: number, h: number): void {
@@ -526,8 +487,19 @@ export async function mountLockstep(host: HTMLElement): Promise<void> {
     labels.subtitle.text = `${String(levelIndex + 1).padStart(2, "0")}  ${lv.name}`;
     labels.brief.text = wrap(lv.brief, 34);
     labels.brief.position.set(32, 250 + level().availableStations.length * 78);
-    labels.scores.text = `CYCLES  ${run.scores.cycles}      AREA  ${run.scores.area}      TAPE  ${run.scores.tapeLength}`;
-    labels.scores.position.set(w / 2, 40);
+    const gauges = [
+      { cap: labels.gCyclesCap, val: labels.gCyclesVal, name: "CYCLES", value: String(run.scores.cycles) },
+      { cap: labels.gAreaCap, val: labels.gAreaVal, name: "AREA", value: String(run.scores.area) },
+      { cap: labels.gTapeCap, val: labels.gTapeVal, name: "TAPE", value: String(run.scores.tapeLength) },
+    ];
+    gauges.forEach((gauge, i) => {
+      const gx = w / 2 - 198 + i * 136;
+      drawGauge(gfx.hud, gx, 24, 128, 56);
+      gauge.cap.text = gauge.name;
+      gauge.cap.position.set(gx + 64, 30);
+      gauge.val.text = gauge.value;
+      gauge.val.position.set(gx + 64, 46);
+    });
     labels.streak.text = `Serie  ${run.consecutiveSuccesses} / ${lv.successStreak}`;
     labels.streak.position.set(w - 116, 112);
     labels.target.text = `Ziel\n${describeTarget(lv.target)}\n\nJetzt\n${describeWorkpiece(wp)}`;
@@ -543,7 +515,7 @@ export async function mountLockstep(host: HTMLElement): Promise<void> {
     labels.prev.position.set(w - 136, 38);
     labels.next.position.set(w - 64, 38);
     labels.waveCaption.text = "Tape";
-    labels.waveCaption.position.set(360, h - 86);
+    labels.waveCaption.position.set(360, h - 94);
     labels.best.text = save.best[lv.id]
       ? `Best  C${save.best[lv.id].cycles} · A${save.best[lv.id].area}`
       : save.completed.includes(lv.id)
@@ -566,28 +538,25 @@ export async function mountLockstep(host: HTMLElement): Promise<void> {
     }
 
     for (const item of pal) {
+      gfx.hud.roundRect(item.x, item.y + 2, item.w, item.h, 10);
+      gfx.hud.fill({ color: 0x000000, alpha: 0.28 });
       gfx.hud.roundRect(item.x, item.y, item.w, item.h, 10);
       gfx.hud.fill({ color: COLORS.panel });
       gfx.hud.roundRect(item.x, item.y, item.w, item.h, 10);
-      gfx.hud.stroke({ width: 1, color: COLORS.panelEdge });
+      gfx.hud.stroke({ width: 1.4, color: COLORS.brassMid, alpha: 0.7 });
+      gfx.hud.roundRect(item.x + 10, item.y + 8, 50, 50, 8);
+      gfx.hud.fill({ color: COLORS.slateLo });
       const icon = new Graphics();
-      icon.roundRect(-20, -20, 40, 40, 8);
-      icon.fill({ color: COLORS.slateLo });
       drawStationGlyph(icon, item.type, COLORS.text);
-      icon.position.set(item.x + 36, item.y + 33);
+      icon.position.set(item.x + 35, item.y + 33);
       gfx.glyphs.addChild(icon);
     }
 
-    gfx.hud.roundRect(28, h - 78, 88, 36, 8);
-    gfx.hud.fill({ color: playing ? COLORS.amber : COLORS.slateLo });
-    gfx.hud.roundRect(126, h - 78, 88, 36, 8);
-    gfx.hud.fill({ color: COLORS.slateLo });
-    gfx.hud.roundRect(224, h - 78, 88, 36, 8);
-    gfx.hud.fill({ color: COLORS.slateLo });
-    gfx.hud.roundRect(w - 168, 22, 64, 32, 8);
-    gfx.hud.fill({ color: COLORS.slateLo });
-    gfx.hud.roundRect(w - 96, 22, 64, 32, 8);
-    gfx.hud.fill({ color: COLORS.slateLo });
+    drawMetalButton(gfx.hud, 28, h - 78, 88, 36, playing);
+    drawMetalButton(gfx.hud, 126, h - 78, 88, 36, false);
+    drawMetalButton(gfx.hud, 224, h - 78, 88, 36, false);
+    drawMetalButton(gfx.hud, w - 168, 22, 64, 32, false);
+    drawMetalButton(gfx.hud, w - 96, 22, 64, 32, false);
   }
 
   function drawOverlay(w: number, h: number): void {
@@ -598,19 +567,14 @@ export async function mountLockstep(host: HTMLElement): Promise<void> {
     labels.overlayNext.visible = overlayOpen;
     if (!overlayOpen) return;
     gfx.overlay.rect(0, 0, w, h);
-    gfx.overlay.fill({ color: 0x000000, alpha: 0.55 });
-    gfx.overlay.roundRect(w * 0.5 - 240, h * 0.5 - 140, 480, 280, 16);
-    gfx.overlay.fill({ color: COLORS.panel });
-    gfx.overlay.roundRect(w * 0.5 - 240, h * 0.5 - 140, 480, 280, 16);
-    gfx.overlay.stroke({ width: 2, color: COLORS.brass });
+    gfx.overlay.fill({ color: 0x000000, alpha: 0.58 });
+    drawInstrument(gfx.overlay, w * 0.5 - 240, h * 0.5 - 140, 480, 280);
     labels.overlayTitle.text = "Stabiler Lauf";
     labels.overlayTitle.position.set(w * 0.5, h * 0.5 - 96);
     labels.overlayBody.text = `Cycles ${run.scores.cycles}   ·   Area ${run.scores.area}   ·   Tape ${run.scores.tapeLength}`;
     labels.overlayBody.position.set(w * 0.5, h * 0.5 - 36);
-    gfx.overlay.roundRect(w * 0.5 - 160, h * 0.62, 140, 44, 8);
-    gfx.overlay.fill({ color: COLORS.slateLo });
-    gfx.overlay.roundRect(w * 0.5 + 20, h * 0.62, 140, 44, 8);
-    gfx.overlay.fill({ color: COLORS.amber });
+    drawMetalButton(gfx.overlay, w * 0.5 - 160, h * 0.62, 140, 44, false);
+    drawMetalButton(gfx.overlay, w * 0.5 + 20, h * 0.62, 140, 44, true);
     labels.overlayRetry.text = "Nochmal";
     labels.overlayRetry.position.set(w * 0.5 - 90, h * 0.62 + 22);
     labels.overlayNext.text = nextLevel(level().id) ? "Weiter" : "Fertig";
@@ -641,7 +605,12 @@ export async function mountLockstep(host: HTMLElement): Promise<void> {
       title: new Text({ text: "LOCKSTEP", style: { ...style(26, COLORS.tapeOn), letterSpacing: 3 } }),
       subtitle: new Text({ text: "", style: style(16, COLORS.textDim, "500") }),
       brief: new Text({ text: "", style: { ...style(13, COLORS.textDim, "400"), wordWrap: true, wordWrapWidth: 170, align: "left" } }),
-      scores: center(new Text({ text: "", style: style(16, COLORS.text) })),
+      gCyclesCap: topCenter(new Text({ text: "", style: style(10, COLORS.brass, "600") })),
+      gCyclesVal: topCenter(new Text({ text: "", style: { ...style(22, COLORS.text), fontFamily: MONO } })),
+      gAreaCap: topCenter(new Text({ text: "", style: style(10, COLORS.brass, "600") })),
+      gAreaVal: topCenter(new Text({ text: "", style: { ...style(22, COLORS.text), fontFamily: MONO } })),
+      gTapeCap: topCenter(new Text({ text: "", style: style(10, COLORS.brass, "600") })),
+      gTapeVal: topCenter(new Text({ text: "", style: { ...style(22, COLORS.text), fontFamily: MONO } })),
       streak: topCenter(new Text({ text: "", style: style(16, COLORS.amber) })),
       target: topCenter(new Text({
         text: "",
@@ -670,13 +639,6 @@ export async function mountLockstep(host: HTMLElement): Promise<void> {
   labels.brief.anchor.set(0, 0);
 
   draw();
-}
-
-function drawPanel(g: Graphics, x: number, y: number, w: number, h: number): void {
-  g.roundRect(x, y, w, h, 14);
-  g.fill({ color: COLORS.panel, alpha: 0.92 });
-  g.roundRect(x, y, w, h, 14);
-  g.stroke({ width: 1, color: COLORS.panelEdge, alpha: 0.9 });
 }
 
 function hitButton(x: number, y: number, bx: number, by: number, bw: number, bh: number): boolean {
