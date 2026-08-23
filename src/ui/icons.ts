@@ -1,6 +1,41 @@
-import { Graphics } from "pixi.js";
+import { FillGradient, Graphics } from "pixi.js";
 import type { StationType } from "../core";
 import { COLORS } from "./theme";
+
+let slateFace: FillGradient | null = null;
+let amberFace: FillGradient | null = null;
+
+function slateFaceFill(): FillGradient {
+  if (!slateFace) {
+    slateFace = new FillGradient({
+      type: "linear",
+      start: { x: 0.2, y: 0 },
+      end: { x: 0.8, y: 1 },
+      colorStops: [
+        { offset: 0, color: 0x9aa6b5 },
+        { offset: 1, color: COLORS.slateLo },
+      ],
+      textureSpace: "local",
+    });
+  }
+  return slateFace;
+}
+
+function amberFaceFill(): FillGradient {
+  if (!amberFace) {
+    amberFace = new FillGradient({
+      type: "linear",
+      start: { x: 0.2, y: 0 },
+      end: { x: 0.8, y: 1 },
+      colorStops: [
+        { offset: 0, color: COLORS.amberHi },
+        { offset: 1, color: COLORS.amber },
+      ],
+      textureSpace: "local",
+    });
+  }
+  return amberFace;
+}
 
 export interface StationLook {
   body: number;
@@ -11,7 +46,7 @@ export interface StationLook {
 }
 
 export function drawStationMachine(g: Graphics, type: StationType, look: StationLook): void {
-  const { body, edge, fired, failed, muted } = look;
+  const { edge, fired, failed, muted } = look;
   g.roundRect(-24, 22, 48, 12, 3);
   g.fill({ color: COLORS.brassLo });
   g.roundRect(-18, 24, 36, 6, 2);
@@ -20,9 +55,11 @@ export function drawStationMachine(g: Graphics, type: StationType, look: Station
   g.roundRect(-30, -26, 60, 50, 8);
   g.fill({ color: COLORS.brassLo });
   g.roundRect(-27, -28, 54, 48, 8);
-  g.fill({ color: body });
+  if (fired) g.fill(amberFaceFill());
+  else if (muted) g.fill({ color: COLORS.slateLo });
+  else g.fill(slateFaceFill());
   g.roundRect(-27, -28, 54, 48, 8);
-  g.stroke({ width: failed ? 3 : 2, color: edge });
+  g.stroke({ width: failed ? 3 : 2, color: failed ? COLORS.fail : edge });
 
   if (!fired) {
     g.ellipse(-7, -14, 14, 6);

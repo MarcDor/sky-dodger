@@ -1,5 +1,64 @@
-import { Graphics } from "pixi.js";
+import { FillGradient, Graphics } from "pixi.js";
 import { COLORS } from "./theme";
+
+let brassDisk: FillGradient | null = null;
+let floorSpot: FillGradient | null = null;
+let wellShade: FillGradient | null = null;
+
+function brassDiskFill(): FillGradient {
+  if (!brassDisk) {
+    brassDisk = new FillGradient({
+      type: "radial",
+      center: { x: 0.32, y: 0.28 },
+      innerRadius: 0,
+      outerCenter: { x: 0.5, y: 0.55 },
+      outerRadius: 0.72,
+      colorStops: [
+        { offset: 0, color: COLORS.brassHi },
+        { offset: 0.4, color: COLORS.brass },
+        { offset: 1, color: COLORS.brassLo },
+      ],
+      textureSpace: "local",
+    });
+  }
+  return brassDisk;
+}
+
+function floorSpotFill(): FillGradient {
+  if (!floorSpot) {
+    floorSpot = new FillGradient({
+      type: "radial",
+      center: { x: 0.5, y: 0.42 },
+      innerRadius: 0,
+      outerCenter: { x: 0.5, y: 0.5 },
+      outerRadius: 0.6,
+      colorStops: [
+        { offset: 0, color: 0x1a2438 },
+        { offset: 1, color: COLORS.bg },
+      ],
+      textureSpace: "local",
+    });
+  }
+  return floorSpot;
+}
+
+function wellFill(): FillGradient {
+  if (!wellShade) {
+    wellShade = new FillGradient({
+      type: "radial",
+      center: { x: 0.45, y: 0.4 },
+      innerRadius: 0,
+      outerCenter: { x: 0.5, y: 0.5 },
+      outerRadius: 0.55,
+      colorStops: [
+        { offset: 0, color: 0x243044 },
+        { offset: 1, color: COLORS.groove },
+      ],
+      textureSpace: "local",
+    });
+  }
+  return wellShade;
+}
 
 export function slotAngle(slot: number, S: number): number {
   return -Math.PI / 2 + (slot / S) * Math.PI * 2;
@@ -15,7 +74,7 @@ export function drawWorkshopFloor(
   mood: number,
 ): void {
   g.rect(0, 0, w, h);
-  g.fill({ color: COLORS.bg });
+  g.fill(floorSpotFill());
 
   for (let i = 5; i >= 1; i -= 1) {
     g.circle(cx, cy, r + 48 + i * 42);
@@ -107,15 +166,13 @@ export function drawMachineRing(
   g.circle(cx, cy, r + 28);
   g.fill({ color: COLORS.brassLo });
   g.circle(cx, cy, r + 24);
-  g.fill({ color: COLORS.brass });
-  g.circle(cx, cy, r + 16);
-  g.fill({ color: COLORS.brassMid });
+  g.fill(brassDiskFill());
   g.circle(cx, cy, r - 8);
   g.fill({ color: COLORS.brassLo });
   g.circle(cx, cy, r - 16);
-  g.fill({ color: COLORS.workpieceLo, alpha: 0.35 });
+  g.fill({ color: COLORS.workpieceLo, alpha: 0.4 });
   g.circle(cx, cy, r - 38);
-  g.fill({ color: COLORS.groove });
+  g.fill(wellFill());
   g.circle(cx, cy, r - 40);
   g.stroke({ width: 2, color: COLORS.brassMid, alpha: 0.8 });
 
