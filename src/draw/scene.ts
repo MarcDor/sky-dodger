@@ -1,5 +1,5 @@
 import { Graphics } from "pixi.js";
-import { ufoPos, type Boom, type Chip, type Game, type Shot, type View } from "../sim/game";
+import { ufoPos, type Boom, type Chip, type Crack, type Game, type Shot, type View } from "../sim/game";
 import { C } from "../style";
 
 export function drawBackdrop(g: Graphics, w: number, h: number, stars: { x: number; y: number; s: number }[]): void {
@@ -25,8 +25,16 @@ export function drawPlanetHalo(g: Graphics, view: View): void {
   g.fill({ color: C.ink, alpha: 0.18 });
 }
 
-export function drawVfx(g: Graphics, shots: Shot[], booms: Boom[], chips: Chip[]): void {
+export function drawVfx(g: Graphics, shots: Shot[], booms: Boom[], chips: Chip[], cracks: Crack[]): void {
   g.clear();
+  for (const crack of cracks) {
+    const fade = Math.min(1, crack.life * 5);
+    for (const ray of crack.rays) {
+      g.moveTo(crack.x, crack.y);
+      g.lineTo(crack.x + Math.cos(ray.angle) * ray.len, crack.y + Math.sin(ray.angle) * ray.len);
+      g.stroke({ width: 4, color: C.ink, cap: "round", alpha: fade });
+    }
+  }
   for (const s of shots) {
     const fade = Math.max(0.25, s.life / 0.16);
     g.moveTo(s.x0, s.y0);

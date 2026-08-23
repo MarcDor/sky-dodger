@@ -32,11 +32,12 @@ describe("incremental swarm", () => {
     expect(incomePerSecond(g)).toBeGreaterThan(one);
   });
 
-  it("auto-fire adds craters and raises wound", () => {
+  it("auto-fire queues breaks and raises wound", () => {
     const g = createGame();
     for (let i = 0; i < 80; i += 1) step(g, 0.05, view);
-    expect(g.craters.length).toBeGreaterThan(2);
+    expect(g.breaks.length).toBeGreaterThan(2);
     expect(g.shotsFired).toBeGreaterThan(2);
+    expect(g.carved).toBeGreaterThan(0);
     expect(wound(g, view.r)).toBeGreaterThan(0);
   });
 

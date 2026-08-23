@@ -1,5 +1,7 @@
 # Cinder 2D
 
-Kein 3D-Globus. Der Planet ist eine Scheibe. UFOs auf Kreisbahnen feuern von allein. Jeder Treffer legt einen Krater (Kreis) in Planet-Koordinaten ab. Wunde = überdeckte Fläche / Scheibenfläche.
+Kein 3D-Globus. Der Planet ist eine Scheibe auf einem Canvas.
 
-Gold = passives Einkommen × UFO-Anzahl + ein bisschen pro Schuss. Nächstes UFO wird teurer.
+Zerstörung ist **destruktiv**, nicht ein Decal: beim Treffer werden die Pixel kopiert (Brocken), dann wird ein unregelmäßiges Loch gestanzt (`destination-out`). Die Brocken fliegen mit derselben Farbe weg. Wackeln sitzt auf der ganzen Szene, plus ein kurzer Hit-Stop.
+
+Wunde ≈ gestanzte Fläche / Scheibenfläche. Gold = Einkommen × UFO-Anzahl + ein bisschen pro Schuss.

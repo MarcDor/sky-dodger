@@ -9,13 +9,6 @@ export interface Ufo {
   period: number;
 }
 
-export interface Crater {
-  x: number;
-  y: number;
-  r: number;
-  heat: number;
-}
-
 export interface Shot {
   x0: number;
   y0: number;
@@ -42,16 +35,33 @@ export interface Chip {
   spin: number;
 }
 
+export interface Crack {
+  x: number;
+  y: number;
+  rays: { angle: number; len: number }[];
+  life: number;
+}
+
+/** Planet-local punch. The renderer copies pixels, then cuts. */
+export interface Break {
+  x: number;
+  y: number;
+  r: number;
+}
+
 export interface Game {
   gold: number;
   time: number;
   nextId: number;
   shake: number;
+  hitStop: number;
+  carved: number;
   ufos: Ufo[];
-  craters: Crater[];
   shots: Shot[];
   booms: Boom[];
   chips: Chip[];
+  cracks: Crack[];
+  breaks: Break[];
   shotsFired: number;
 }
 
@@ -61,7 +71,6 @@ export interface View {
   r: number;
 }
 
-const MAX_CRATERS = 36;
 const INCOME_PER_UFO = 3.2;
 
 export function ufoCost(owned: number): number {
@@ -74,16 +83,18 @@ export function createGame(): Game {
     time: 0,
     nextId: 2,
     shake: 0,
+    hitStop: 0,
+    carved: 0,
     ufos: [makeUfo(1)],
-    craters: [],
     shots: [],
     booms: [],
     chips: [],
+    cracks: [],
+    breaks: [],
     shotsFired: 0,
   };
 }
 
-/** Deterministic per id — each ship gets its own radius, spin and rhythm. */
 export function makeUfo(id: number): Ufo {
   const r = (k: number): number => {
     const n = Math.sin(id * 97.13 + k * 19.7) * 43758.5453;
@@ -98,7 +109,7 @@ export function makeUfo(id: number): Ufo {
     wobble: 0.025 + r(5) * 0.055,
     wobbleSpeed: 1.05 + r(6) * 1.6,
     cooldown: 0.15 + r(7) * 0.55,
-    period: 0.72 + r(8) * 0.5,
+    period: 0.85 + r(8) * 0.45,
   };
 }
 
@@ -118,9 +129,7 @@ export function incomePerSecond(game: Game): number {
 export function wound(game: Game, planetR: number): number {
   if (planetR <= 0) return 0;
   const area = Math.PI * planetR * planetR;
-  let covered = 0;
-  for (const c of game.craters) covered += Math.PI * c.r * c.r * 0.55;
-  return Math.min(1, covered / (area * 0.62));
+  return Math.min(1, game.carved / (area * 0.72));
 }
 
 export function ufoPos(ufo: Ufo, view: View, time: number): { x: number; y: number } {
@@ -133,9 +142,16 @@ export function ufoPos(ufo: Ufo, view: View, time: number): { x: number; y: numb
 
 export function step(game: Game, dt: number, view: View): void {
   const t = Math.min(0.05, dt);
+  if (game.hitStop > 0) {
+    game.hitStop = Math.max(0, game.hitStop - t);
+    game.shake = Math.max(game.shake, 0.75);
+    ageFx(game, t * 0.35);
+    return;
+  }
+
   game.time += t;
   game.gold += incomePerSecond(game) * t;
-  game.shake = Math.max(0, game.shake - t * 4.2);
+  game.shake = Math.max(0, game.shake - t * 3.4);
 
   for (const ufo of game.ufos) {
     ufo.angle += ufo.omega * t;
@@ -145,21 +161,21 @@ export function step(game: Game, dt: number, view: View): void {
     fire(game, view, ufo);
   }
 
-  for (const c of game.craters) c.heat = Math.max(0, c.heat - t * 1.4);
+  ageFx(game, t);
+}
 
+function ageFx(game: Game, t: number): void {
   for (const s of game.shots) s.life -= t;
   game.shots = game.shots.filter((s) => s.life > 0);
-
   for (const b of game.booms) b.age += t;
   game.booms = game.booms.filter((b) => b.age < b.life);
-
+  for (const crack of game.cracks) crack.life -= t;
+  game.cracks = game.cracks.filter((c) => c.life > 0);
   for (const chip of game.chips) {
     chip.life -= t;
     chip.x += chip.vx * t;
     chip.y += chip.vy * t;
-    chip.vy += 90 * t;
     chip.rot += chip.spin * t;
-    chip.vx *= 0.99;
   }
   game.chips = game.chips.filter((c) => c.life > 0);
 }
@@ -167,50 +183,47 @@ export function step(game: Game, dt: number, view: View): void {
 function fire(game: Game, view: View, ufo: Ufo): void {
   const from = ufoPos(ufo, view, game.time);
   const a = Math.random() * Math.PI * 2;
-  const rad = view.r * Math.sqrt(Math.random()) * 0.78;
+  const rad = view.r * (0.2 + Math.sqrt(Math.random()) * 0.62);
   const x = Math.cos(a) * rad;
   const y = Math.sin(a) * rad;
   const hitX = view.cx + x;
   const hitY = view.cy + y;
-  const size = 18 + Math.random() * 12;
+  const size = 22 + Math.random() * 14;
 
-  game.shots.push({ x0: from.x, y0: from.y, x1: hitX, y1: hitY, life: 0.16 });
-  stampCrater(game, x, y, size);
-  game.booms.push({ x: hitX, y: hitY, age: 0, life: 0.42, size });
+  game.shots.push({ x0: from.x, y0: from.y, x1: hitX, y1: hitY, life: 0.18 });
+  game.breaks.push({ x, y, r: size });
+  game.carved += Math.PI * size * size * 0.55;
+  game.booms.push({ x: hitX, y: hitY, age: 0, life: 0.48, size: size * 1.15 });
+  game.cracks.push({
+    x: hitX,
+    y: hitY,
+    life: 0.22,
+    rays: [0, 1, 2, 3, 4].map((i) => ({
+      angle: a + (i - 2) * 0.55 + (Math.random() - 0.5) * 0.4,
+      len: size * (1.1 + Math.random() * 0.8),
+    })),
+  });
   spawnChips(game, hitX, hitY, x, y);
-  game.shake = Math.min(1, game.shake + 0.62);
+  game.shake = Math.min(1.25, game.shake + 0.9);
+  game.hitStop = 0.05;
   game.shotsFired += 1;
   game.gold += 0.4;
 }
 
-function stampCrater(game: Game, x: number, y: number, size: number): void {
-  for (const c of game.craters) {
-    const d = Math.hypot(c.x - x, c.y - y);
-    if (d < c.r + size * 0.45) {
-      c.r = Math.min(52, c.r + size * 0.22);
-      c.heat = 1;
-      c.x = (c.x * c.r + x * size) / (c.r + size);
-      c.y = (c.y * c.r + y * size) / (c.r + size);
-      return;
-    }
-  }
-  game.craters.push({ x, y, r: size * 0.55, heat: 1 });
-  if (game.craters.length > MAX_CRATERS) game.craters.splice(0, game.craters.length - MAX_CRATERS);
-}
-
 function spawnChips(game: Game, x: number, y: number, lx: number, ly: number): void {
-  const n = 5 + Math.floor(Math.random() * 4);
+  const n = 4 + Math.floor(Math.random() * 3);
+  const out = Math.atan2(ly, lx);
   for (let i = 0; i < n; i += 1) {
-    const a = Math.atan2(ly, lx) + (Math.random() - 0.5) * 1.6;
-    const spd = 80 + Math.random() * 140;
+    const ang = out + (Math.random() - 0.5) * 1.8;
+    const spd = 120 + Math.random() * 180;
     game.chips.push({
       x,
       y,
-      vx: Math.cos(a) * spd,
-      vy: Math.sin(a) * spd - 40,
-      life: 0.35 + Math.random() * 0.25,
+      vx: Math.cos(ang) * spd,
+      vy: Math.sin(ang) * spd,
+      life: 0.55 + Math.random() * 0.35,
       rot: Math.random() * 6,
-      spin: (Math.random() - 0.5) * 14,
+      spin: (Math.random() - 0.5) * 16,
     });
   }
 }

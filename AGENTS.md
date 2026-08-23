@@ -11,4 +11,4 @@ After `npm ci` (or `npm install` if `package-lock.json` is missing):
 
 The Vite dev server is a long-running process. Do not start it from install/update scripts. If port 5173 is occupied, stop that process by PID or use `npm run preview` on port 4173 after a build.
 
-Gameplay verification: a flat poster Earth sits in the center (teal disc, green circle-continents, thick ink outline). At least one UFO orbits and fires a red laser by itself. Gold ticks up. Click **UFO holen** to spawn another shooter. Craters appear as brown/orange bites. Audio may be blocked until the first gesture.
+Gameplay verification: a flat poster Earth sits in the center. UFOs fire by themselves. Hits must **cut holes** in the disc (you see space through the planet) and throw matching colored chunks outward. The view shakes. Gold ticks up. Click **UFO holen** to spawn another shooter. Audio may be blocked until the first gesture.

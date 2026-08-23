@@ -1,7 +1,15 @@
-import { Application, Graphics, Sprite, Texture } from "pixi.js";
-import { paintPlanet } from "./draw/planet";
+import { Application, Container, Graphics, Sprite, Texture } from "pixi.js";
+import { PlanetSurface } from "./draw/planet";
 import { drawBackdrop, drawPlanetHalo, drawUfos, drawVfx } from "./draw/scene";
 import { buyUfo, createGame, incomePerSecond, step, ufoCost, wound } from "./sim/game";
+
+interface FlyBit {
+  sprite: Sprite;
+  vx: number;
+  vy: number;
+  spin: number;
+  life: number;
+}
 
 export async function mountCinder(host: HTMLElement): Promise<void> {
   const app = new Application();
@@ -24,16 +32,20 @@ export async function mountCinder(host: HTMLElement): Promise<void> {
   }));
 
   const bg = new Graphics();
+  const world = new Container();
   const halo = new Graphics();
-  const canvas = document.createElement("canvas");
-  paintPlanet(canvas, 200, []);
-  const planetTex = Texture.from(canvas);
+  const surface = new PlanetSurface();
+  surface.rebuild(200);
+  let planetTex = Texture.from(surface.canvas);
   const planet = new Sprite(planetTex);
   planet.anchor.set(0.5);
+  const bits = new Container();
   const vfx = new Graphics();
   const ships = new Graphics();
-  app.stage.addChild(bg, halo, planet, vfx, ships);
+  world.addChild(halo, planet, bits, vfx, ships);
+  app.stage.addChild(bg, world);
 
+  const flying: FlyBit[] = [];
   const game = createGame();
   const goldVal = document.getElementById("goldVal");
   const planetVal = document.getElementById("planetVal");
@@ -60,7 +72,7 @@ export async function mountCinder(host: HTMLElement): Promise<void> {
   let last = performance.now();
   const tick = (): void => {
     const now = performance.now();
-    const dt = (now - last) / 1000;
+    const dt = Math.min(0.05, (now - last) / 1000);
     last = now;
     const w = app.renderer.width;
     const h = app.renderer.height;
@@ -69,17 +81,57 @@ export async function mountCinder(host: HTMLElement): Promise<void> {
       cy: h * 0.54,
       r: Math.min(w, h) * 0.26,
     };
+
+    if (Math.abs(view.r - surface.radius) > 3) {
+      surface.rebuild(view.r);
+      planetTex.destroy(true);
+      planetTex = Texture.from(surface.canvas);
+      planet.texture = planetTex;
+    }
+
     step(game, dt, view);
+
+    for (const br of game.breaks) {
+      const stamps = surface.carve(br.x, br.y, br.r);
+      const out = Math.atan2(br.y, br.x);
+      for (const st of stamps) {
+        const spr = new Sprite(Texture.from(st.canvas));
+        spr.anchor.set(0.5);
+        spr.position.set(view.cx + st.localX, view.cy + st.localY);
+        bits.addChild(spr);
+        const spd = 130 + Math.random() * 170;
+        const spread = out + (Math.random() - 0.5) * 0.9;
+        flying.push({
+          sprite: spr,
+          vx: Math.cos(spread) * spd,
+          vy: Math.sin(spread) * spd,
+          spin: (Math.random() - 0.5) * 9,
+          life: 1.15 + Math.random() * 0.55,
+        });
+      }
+    }
+    game.breaks.length = 0;
+    planetTex.source.update();
+
+    for (let i = flying.length - 1; i >= 0; i -= 1) {
+      const bit = flying[i];
+      bit.life -= dt;
+      bit.sprite.x += bit.vx * dt;
+      bit.sprite.y += bit.vy * dt;
+      bit.sprite.rotation += bit.spin * dt;
+      bit.sprite.alpha = Math.min(1, bit.life * 1.4);
+      if (bit.life > 0) continue;
+      bit.sprite.destroy({ texture: true });
+      flying.splice(i, 1);
+    }
 
     drawBackdrop(bg, w, h, stars);
     drawPlanetHalo(halo, view);
-    paintPlanet(canvas, view.r, game.craters);
-    planetTex.source.update();
-    planet.texture = planetTex;
     const punch = game.shake;
-    planet.position.set(view.cx + (Math.random() - 0.5) * punch * 10, view.cy + (Math.random() - 0.5) * punch * 10);
-    planet.scale.set(1 - punch * 0.035);
-    drawVfx(vfx, game.shots, game.booms, game.chips);
+    world.position.set((Math.random() - 0.5) * punch * 18, (Math.random() - 0.5) * punch * 18);
+    planet.position.set(view.cx, view.cy);
+    planet.scale.set(1 - punch * 0.04);
+    drawVfx(vfx, game.shots, game.booms, game.chips, game.cracks);
     drawUfos(ships, game, view);
 
     const wnd = wound(game, view.r);
