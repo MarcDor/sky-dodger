@@ -1,5 +1,6 @@
-import { Application, Container, Graphics } from "pixi.js";
-import { drawBackdrop, drawPlanetBody, drawPlanetHalo, drawUfos, drawVfx } from "./draw/scene";
+import { Application, Graphics, Sprite, Texture } from "pixi.js";
+import { paintPlanet } from "./draw/planet";
+import { drawBackdrop, drawPlanetHalo, drawUfos, drawVfx } from "./draw/scene";
 import { buyUfo, createGame, incomePerSecond, step, ufoCost, wound } from "./sim/game";
 
 export async function mountCinder(host: HTMLElement): Promise<void> {
@@ -24,16 +25,14 @@ export async function mountCinder(host: HTMLElement): Promise<void> {
 
   const bg = new Graphics();
   const halo = new Graphics();
-  const planetLayer = new Container();
-  const planet = new Graphics();
-  const mask = new Graphics();
-  const outline = new Graphics();
+  const canvas = document.createElement("canvas");
+  paintPlanet(canvas, 200, []);
+  const planetTex = Texture.from(canvas);
+  const planet = new Sprite(planetTex);
+  planet.anchor.set(0.5);
   const vfx = new Graphics();
   const ships = new Graphics();
-  planetLayer.addChild(planet);
-  mask.renderable = false;
-  planetLayer.mask = mask;
-  app.stage.addChild(bg, halo, planetLayer, mask, outline, vfx, ships);
+  app.stage.addChild(bg, halo, planet, vfx, ships);
 
   const game = createGame();
   const goldVal = document.getElementById("goldVal");
@@ -74,13 +73,10 @@ export async function mountCinder(host: HTMLElement): Promise<void> {
 
     drawBackdrop(bg, w, h, stars);
     drawPlanetHalo(halo, view);
-    drawPlanetBody(planet, view, game.craters);
-    mask.clear();
-    mask.circle(view.cx, view.cy, view.r);
-    mask.fill(0xffffff);
-    outline.clear();
-    outline.circle(view.cx, view.cy, view.r);
-    outline.stroke({ width: Math.max(8, view.r * 0.048), color: 0x1b2437, alignment: 0 });
+    paintPlanet(canvas, view.r, game.craters);
+    planetTex.source.update();
+    planet.texture = planetTex;
+    planet.position.set(view.cx, view.cy);
     drawVfx(vfx, game.shots, game.booms);
     drawUfos(ships, game, view, now / 1000);
 
