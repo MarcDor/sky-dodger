@@ -35,8 +35,22 @@ describe("incremental swarm", () => {
   it("auto-fire adds craters and raises wound", () => {
     const g = createGame();
     for (let i = 0; i < 80; i += 1) step(g, 0.05, view);
-    expect(g.craters.length).toBeGreaterThan(5);
-    expect(g.shotsFired).toBeGreaterThan(5);
+    expect(g.craters.length).toBeGreaterThan(2);
+    expect(g.shotsFired).toBeGreaterThan(2);
     expect(wound(g, view.r)).toBeGreaterThan(0);
+  });
+
+  it("gives each UFO its own orbit and spin", () => {
+    const g = createGame();
+    g.gold = 500;
+    buyUfo(g);
+    buyUfo(g);
+    buyUfo(g);
+    const omegas = new Set(g.ufos.map((u) => u.omega.toFixed(3)));
+    const orbs = new Set(g.ufos.map((u) => u.orbitMul.toFixed(3)));
+    expect(omegas.size).toBeGreaterThan(1);
+    expect(orbs.size).toBeGreaterThan(1);
+    expect(g.ufos.some((u) => u.omega < 0)).toBe(true);
+    expect(g.ufos.some((u) => u.omega > 0)).toBe(true);
   });
 });

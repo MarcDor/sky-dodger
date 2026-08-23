@@ -7,7 +7,7 @@ export const C = {
   ocean: 0x3dcec5,
   land: 0x8be05a,
   ink: 0x1b2437,
-  craterRim: 0x6a3a22,
+  craterRim: 0xc48a52,
   crater: 0x241814,
   craterHot: 0xff8a2a,
   ufo: 0x3d9ea8,

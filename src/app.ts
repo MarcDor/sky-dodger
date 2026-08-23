@@ -76,9 +76,11 @@ export async function mountCinder(host: HTMLElement): Promise<void> {
     paintPlanet(canvas, view.r, game.craters);
     planetTex.source.update();
     planet.texture = planetTex;
-    planet.position.set(view.cx, view.cy);
-    drawVfx(vfx, game.shots, game.booms);
-    drawUfos(ships, game, view, now / 1000);
+    const punch = game.shake;
+    planet.position.set(view.cx + (Math.random() - 0.5) * punch * 10, view.cy + (Math.random() - 0.5) * punch * 10);
+    planet.scale.set(1 - punch * 0.035);
+    drawVfx(vfx, game.shots, game.booms, game.chips);
+    drawUfos(ships, game, view);
 
     const wnd = wound(game, view.r);
     if (goldVal) goldVal.textContent = Math.floor(game.gold).toLocaleString("de-DE");
