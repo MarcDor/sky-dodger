@@ -1,7 +1,7 @@
 {
   "name": "cinder",
   "version": "0.1.0",
-  "description": "Cinder — orbital laser vs. Earth. Progressive crust ablation.",
+  "description": "Cinder — flat incremental. UFOs chew a cartoon planet.",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -12,11 +12,10 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "three": "^0.170.0"
+    "pixi.js": "^8.20.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",
-    "@types/three": "^0.170.0",
     "eslint": "^9.15.0",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.15.0",

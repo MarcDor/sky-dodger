@@ -1,6 +1,6 @@
 # CINDER
 
-Orbital-Laser gegen eine **Cel-Globe**: toon-shaded Cartoon-Erde (kein NASA-Foto), gold/teal UFO, dicker Laser. Die Kruste wird nicht per „Loch-Bool“ gelöscht, sondern **ablatiert**: der Strahl deponiert Energie, Hitze muss erst die Verdampfungsschwelle überschreiten, dann wächst ein Krater, die Schmelzpfanne weitet sich bei Dwell.
+Incremental: UFOs kaufen, Gold verdienen, den Planeten zerlegen. **Flat cartoon** (Kurzgesagt-Füllungen, Worms-Kontur) — kein 3D, keine Foto-Erde.
 
 ```bash
 npm install
@@ -11,8 +11,7 @@ npm run dev
 
 | | |
 | --- | --- |
-| Linke Maustaste halten | Laser |
-| Rechte Maustaste ziehen | Orbit |
-| Mausrad | Zoom |
+| Läuft von allein | UFOs feuern im Orbit |
+| UFO holen | kostet Gold, erhöht Einkommen |
 
-`npm test` prüft Ray-Sphere, UV-Wrap über die Datumsgrenze, Hitze→Krater, Abkühlung.
+`npm test` prüft Kauf, Einkommen und Auto-Feuer.

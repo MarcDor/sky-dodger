@@ -11,7 +11,7 @@ export default defineConfig({
     port: 4173,
   },
   optimizeDeps: {
-    include: ["three"],
+    include: ["pixi.js"],
   },
   test: {
     environment: "node",

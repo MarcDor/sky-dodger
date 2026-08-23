@@ -2,7 +2,7 @@
 
 ## Cursor Cloud specific instructions
 
-Cinder is a client-only Three.js prototype (Earth + orbital laser). There is no backend, database, or login flow.
+Cinder is a client-only PixiJS 2D incremental (flat cartoon Earth, auto-firing UFOs). There is no backend, database, or login flow.
 
 After `npm ci` (or `npm install` if `package-lock.json` is missing):
 
@@ -11,4 +11,4 @@ After `npm ci` (or `npm install` if `package-lock.json` is missing):
 
 The Vite dev server is a long-running process. Do not start it from install/update scripts. If port 5173 is occupied, stop that process by PID or use `npm run preview` on port 4173 after a build.
 
-Gameplay verification: Earth is a cel-shaded cartoon globe (teal ocean, blob continents, cyan halo) — not a NASA photo. Hold left mouse on the globe to fire the cherry-red laser from the gold/teal UFO. Confirm a tan cartoon crater with an orange core, chunky debris, and the gold HUD meters moving. Right-drag orbits. Audio may be blocked until the first gesture.
+Gameplay verification: a flat poster Earth sits in the center (teal disc, green circle-continents, thick ink outline). At least one UFO orbits and fires a red laser by itself. Gold ticks up. Click **UFO holen** to spawn another shooter. Craters appear as brown/orange bites. Audio may be blocked until the first gesture.

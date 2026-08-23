@@ -9,10 +9,10 @@
       body {
         margin: 0;
         height: 100%;
-        background: #071226;
+        background: #14233c;
         overflow: hidden;
-        color: #f4f1e4;
-        font-family: "Trebuchet MS", "Avenir Next", "Segoe UI", sans-serif;
+        color: #f4f7ff;
+        font-family: "Trebuchet MS", "Verdana", sans-serif;
       }
       #game {
         width: 100%;
@@ -27,129 +27,116 @@
         pointer-events: none;
       }
       .panel {
-        background: #0d3a42;
-        border: 5px solid #e0b23a;
-        border-radius: 22px;
-        box-shadow: 0 6px 0 #8a6414, 0 10px 24px rgba(0, 0, 0, 0.35);
+        background: #1c3358;
+        border: 5px solid #1b2437;
+        border-radius: 18px;
       }
       #hud .tl {
         position: absolute;
-        top: 24px;
-        left: 28px;
-        padding: 12px 20px 14px;
+        top: 22px;
+        left: 22px;
+        padding: 12px 18px;
       }
       #hud h1 {
         margin: 0;
         font-size: 26px;
-        letter-spacing: 0.28em;
+        letter-spacing: 0.2em;
         font-weight: 800;
-        color: #ffe7a3;
+        color: #ffd15a;
       }
       #hud .sub {
-        margin-top: 4px;
+        margin-top: 3px;
         font-size: 13px;
-        letter-spacing: 0.06em;
-        color: #9ee0d6;
+        color: #9db4d4;
       }
       #gold {
         position: absolute;
-        top: 24px;
-        right: 28px;
+        top: 22px;
+        right: 22px;
         display: flex;
         align-items: center;
         gap: 10px;
-        padding: 10px 18px;
+        padding: 10px 16px;
       }
       .coin {
-        width: 28px;
-        height: 28px;
+        width: 26px;
+        height: 26px;
         border-radius: 50%;
-        background: radial-gradient(circle at 35% 30%, #ffe27a, #e0b23a 55%, #a87a12);
-        border: 3px solid #fff3b0;
-        box-shadow: inset 0 -3px 0 #b8861a;
-      }
-      .coin::after {
-        content: "★";
-        display: block;
-        text-align: center;
-        line-height: 22px;
-        color: #8a6414;
-        font-size: 13px;
+        background: #ffd15a;
+        border: 4px solid #1b2437;
       }
       #gold .label {
-        font-size: 12px;
-        letter-spacing: 0.18em;
-        color: #ffe7a3;
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        color: #ffd15a;
       }
       #goldVal {
         font-size: 22px;
         font-weight: 800;
-        color: #fff8e4;
-        letter-spacing: 0.04em;
       }
-      #dials {
+      #shop {
         position: absolute;
-        left: 28px;
-        bottom: 28px;
+        left: 22px;
+        bottom: 22px;
+        padding: 14px 16px 16px;
+        pointer-events: auto;
+        width: 220px;
+      }
+      #shop p {
+        margin: 0 0 10px;
+        color: #9db4d4;
+        font-size: 13px;
+      }
+      #shop strong {
+        color: #f4f7ff;
+      }
+      #buyUfo {
+        width: 100%;
+        border: 5px solid #1b2437;
+        background: #8be05a;
+        color: #1b2437;
+        font: 800 16px "Trebuchet MS", sans-serif;
+        border-radius: 14px;
+        padding: 10px 8px;
+        cursor: pointer;
+      }
+      #buyUfo:disabled {
+        background: #4f6a5a;
+        color: #1b2437;
+        cursor: default;
+      }
+      #meters {
+        position: absolute;
+        right: 22px;
+        bottom: 22px;
+        width: 230px;
+        padding: 12px 14px;
+      }
+      .meter label {
         display: flex;
-        gap: 16px;
-      }
-      .dial-wrap {
-        width: 108px;
-        text-align: center;
-        padding: 10px 8px 8px;
-      }
-      .dial {
-        --p: 0%;
-        width: 78px;
-        height: 78px;
-        margin: 0 auto 6px;
-        border-radius: 50%;
-        background: conic-gradient(#ff7a32 0 var(--p), #163038 var(--p) 100%);
-        border: 6px solid #e0b23a;
-        box-shadow: inset 0 0 0 7px #0d3a42;
-        position: relative;
-      }
-      .dial.ice {
-        background: conic-gradient(#3dd6a0 0 var(--p), #163038 var(--p) 100%);
-      }
-      .dial::after {
-        content: "";
-        position: absolute;
-        inset: 14px;
-        border-radius: 50%;
-        background: #0d3a42;
-        border: 3px solid #e0b23a;
-      }
-      .dial-wrap span {
+        justify-content: space-between;
         font-size: 11px;
-        letter-spacing: 0.16em;
-        color: #ffe7a3;
-        font-weight: 700;
+        letter-spacing: 0.12em;
+        color: #9db4d4;
+        margin-bottom: 5px;
       }
-      .dial-wrap b {
-        display: block;
-        margin-top: 2px;
-        color: #fff8e4;
+      .track {
+        height: 14px;
+        background: #14233c;
+        border: 4px solid #1b2437;
+        border-radius: 99px;
+        overflow: hidden;
+        margin-bottom: 10px;
       }
-      #stats {
-        position: absolute;
-        right: 28px;
-        bottom: 28px;
-        padding: 10px 16px;
-        font-size: 13px;
-        color: #9ee0d6;
-        line-height: 1.45;
-        text-align: right;
+      .fill {
+        height: 100%;
+        width: 100%;
+        background: #3dcec5;
       }
-      #hint {
-        position: absolute;
-        left: 28px;
-        top: 118px;
-        padding: 8px 14px;
-        font-size: 13px;
-        color: #9ee0d6;
-        letter-spacing: 0.03em;
+      #shotsVal,
+      #ufoVal {
+        font-weight: 800;
+        color: #f4f7ff;
       }
     </style>
   </head>
@@ -158,29 +145,24 @@
     <div id="hud">
       <div class="tl panel">
         <h1>CINDER</h1>
-        <div class="sub">Cel-Globe · Orbital-Laser</div>
+        <div class="sub">Flat · UFO-Schwarm</div>
       </div>
       <div id="gold" class="panel">
         <div class="coin"></div>
         <div>
           <div class="label">GOLD</div>
-          <div id="goldVal">0</div>
+          <div id="goldVal">40</div>
         </div>
       </div>
-      <div id="dials">
-        <div class="dial-wrap panel">
-          <div class="dial ice" id="woundDial"></div>
-          <span>WUNDE</span>
-          <b id="crustVal">0%</b>
-        </div>
-        <div class="dial-wrap panel">
-          <div class="dial" id="heatDial"></div>
-          <span>HITZE</span>
-          <b id="heatVal">0%</b>
-        </div>
+      <div id="shop" class="panel">
+        <p><strong id="ufoVal">1</strong> UFOs · <span id="incomeVal">+3/s</span></p>
+        <button id="buyUfo" type="button">UFO holen · 30</button>
       </div>
-      <div id="stats" class="panel">Energie 0 MJ<br />Impulse 0</div>
-      <div id="hint" class="panel">LMB feuern · RMB Orbit · Rad Zoom</div>
+      <div id="meters" class="panel">
+        <label><span>PLANET</span><span id="planetVal">100%</span></label>
+        <div class="track"><div id="planetFill" class="fill"></div></div>
+        <label><span>SCHÜSSE</span><span id="shotsVal">0</span></label>
+      </div>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>

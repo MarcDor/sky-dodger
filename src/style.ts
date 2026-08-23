@@ -1,0 +1,21 @@
+/** Flat poster palette. Kurzgesagt fills, Worms outlines. No gradients, no metal. */
+export const C = {
+  bg: 0x14233c,
+  star: 0xe8f2ff,
+  sun: 0xffd15a,
+  atmo: 0x7ad4ff,
+  ocean: 0x3dcec5,
+  land: 0x8be05a,
+  ink: 0x1b2437,
+  craterRim: 0x6a3a22,
+  crater: 0x241814,
+  craterHot: 0xff8a2a,
+  ufo: 0x3d9ea8,
+  ufoShade: 0x2a7178,
+  dome: 0xffd15a,
+  domeShade: 0xd7a32a,
+  laser: 0xff4b4b,
+  laserCore: 0xffe29a,
+  boom: 0xffc94a,
+  boomHot: 0xfff6d2,
+} as const;
