@@ -122,6 +122,7 @@ export async function mountLockstep(host: HTMLElement): Promise<void> {
     editLayout((next) => {
       next.stations = next.stations.filter((s) => s.position !== position);
       next.stations.push({ type, position });
+      next.tape[position] = true;
     });
   }
 
@@ -207,6 +208,14 @@ export async function mountLockstep(host: HTMLElement): Promise<void> {
     }
 
     const { w, h } = layoutSlots();
+    const wave = waveformLayout(w, h, level().S);
+    for (let i = 0; i < wave.S; i += 1) {
+      const x = wave.x0 + i * (wave.bw + 4);
+      if (hitButton(e.global.x, e.global.y, x, wave.y0, wave.bw, 36)) {
+        toggleTape(i);
+        return;
+      }
+    }
     if (hitButton(e.global.x, e.global.y, 28, h - 78, 88, 36)) {
       playing = !playing;
       return;
@@ -465,11 +474,7 @@ export async function mountLockstep(host: HTMLElement): Promise<void> {
 
   function drawWave(w: number, h: number): void {
     gfx.wave.clear();
-    const S = level().S;
-    const x0 = 330;
-    const y0 = h - 70;
-    const avail = w - 360;
-    const bw = Math.max(10, avail / S - 4);
+    const { S, x0, y0, bw } = waveformLayout(w, h, level().S);
     for (let i = 0; i < S; i += 1) {
       const x = x0 + i * (bw + 4);
       const on = layout.tape[i];
@@ -507,7 +512,7 @@ export async function mountLockstep(host: HTMLElement): Promise<void> {
     labels.prev.position.set(w - 136, 38);
     labels.next.position.set(w - 64, 38);
     labels.waveCaption.text = "Tape";
-    labels.waveCaption.position.set(300, h - 52);
+    labels.waveCaption.position.set(318, h - 78);
     labels.best.text = save.best[lv.id]
       ? `Best  C${save.best[lv.id].cycles} · A${save.best[lv.id].area}`
       : save.completed.includes(lv.id)
@@ -649,6 +654,19 @@ function lerpAngle(a: number, b: number, t: number): number {
 
 function ease(t: number): number {
   return t * t * (3 - 2 * t);
+}
+
+function waveformLayout(
+  w: number,
+  h: number,
+  S: number,
+): { S: number; x0: number; y0: number; bw: number } {
+  return {
+    S,
+    x0: 330,
+    y0: h - 70,
+    bw: Math.max(10, (w - 360) / S - 4),
+  };
 }
 
 function wrap(text: string, width: number): string {
