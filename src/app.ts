@@ -3,22 +3,25 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { DamageField } from "./sim/damageField";
 import { createEarth } from "./render/earth";
 import { Debris } from "./render/debris";
-import { createSatellite, createStars, createSun } from "./render/props";
+import { createStars, createSun, createUfo } from "./render/props";
 import { aimBeam, createLaser } from "./render/laser";
+import { buildStylePack } from "./render/styleMaps";
+import { createToonRamp } from "./render/toon";
+import { createTrees } from "./render/trees";
+import { PAL } from "./render/palette";
 
 const SUN = new THREE.Vector3(-8, 3.2, 4.5);
 
-export async function mountCinder(host: HTMLElement): Promise<void> {
+export function mountCinder(host: HTMLElement): void {
   const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.setSize(host.clientWidth, host.clientHeight);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.35;
+  renderer.toneMapping = THREE.NoToneMapping;
   host.appendChild(renderer.domElement);
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x02040a);
+  scene.background = new THREE.Color(PAL.space);
   const camera = new THREE.PerspectiveCamera(42, host.clientWidth / host.clientHeight, 0.05, 80);
   camera.position.set(0.35, 0.55, 2.85);
 
@@ -33,21 +36,10 @@ export async function mountCinder(host: HTMLElement): Promise<void> {
   controls.mouseButtons.MIDDLE = THREE.MOUSE.DOLLY;
   controls.target.set(0, 0, 0);
 
-  const loader = new THREE.TextureLoader();
-  const [day, normal, spec, clouds] = await Promise.all([
-    loader.loadAsync("/earth/earth_atmos_2048.jpg"),
-    loader.loadAsync("/earth/earth_normal_2048.jpg"),
-    loader.loadAsync("/earth/earth_specular_2048.jpg"),
-    loader.loadAsync("/earth/earth_clouds_1024.png"),
-  ]);
-  day.colorSpace = THREE.SRGBColorSpace;
-  clouds.colorSpace = THREE.SRGBColorSpace;
-  for (const t of [day, normal, spec, clouds]) {
-    t.anisotropy = renderer.capabilities.getMaxAnisotropy();
-    t.wrapS = THREE.RepeatWrapping;
-  }
-  normal.colorSpace = THREE.NoColorSpace;
-  spec.colorSpace = THREE.NoColorSpace;
+  const pack = buildStylePack();
+  const maxAniso = renderer.capabilities.getMaxAnisotropy();
+  pack.albedo.anisotropy = maxAniso;
+  pack.clouds.anisotropy = maxAniso;
 
   const field = new DamageField();
   const damageTex = new THREE.DataTexture(
@@ -63,27 +55,29 @@ export async function mountCinder(host: HTMLElement): Promise<void> {
   damageTex.needsUpdate = true;
   damageTex.colorSpace = THREE.NoColorSpace;
 
-  const globe = createEarth({ day, normal, spec, clouds, damage: damageTex });
+  const globe = createEarth(pack, damageTex);
   const planet = new THREE.Group();
-  planet.add(globe.earth, globe.clouds, globe.atmosphere);
+  const ramp = createToonRamp();
+  const trees = createTrees(pack, ramp);
+  planet.add(globe.outline, globe.earth, trees, globe.clouds, globe.atmosphere);
   scene.add(planet);
   scene.add(createStars());
   scene.add(createSun());
 
-  const ambient = new THREE.AmbientLight(0x1a2233, 0.35);
-  const key = new THREE.DirectionalLight(0xfff2d8, 2.1);
+  scene.add(new THREE.HemisphereLight(0x8fd4ee, 0x243050, 0.85));
+  const key = new THREE.DirectionalLight(0xfff2d0, 2.4);
   key.position.copy(SUN);
-  scene.add(ambient, key);
+  scene.add(key);
 
-  const sat = createSatellite();
+  const sat = createUfo(ramp);
   sat.position.set(1.55, 0.62, 1.85);
   scene.add(sat);
 
   const laser = createLaser();
   scene.add(laser.core, laser.glow, laser.impact, laser.light);
 
-  const debris = new Debris();
-  scene.add(debris.points);
+  const debris = new Debris(ramp);
+  scene.add(debris.mesh);
 
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
@@ -111,7 +105,10 @@ export async function mountCinder(host: HTMLElement): Promise<void> {
   const crustVal = document.getElementById("crustVal");
   const heatFill = document.getElementById("heatFill");
   const heatVal = document.getElementById("heatVal");
+  const goldVal = document.getElementById("goldVal");
   const stats = document.getElementById("stats");
+  const woundDial = document.getElementById("woundDial");
+  const heatDial = document.getElementById("heatDial");
 
   const clock = new THREE.Clock();
   const sunDir = SUN.clone().normalize();
@@ -122,7 +119,7 @@ export async function mountCinder(host: HTMLElement): Promise<void> {
     globe.uniforms.sunDir.value.copy(sunDir);
 
     planet.rotation.y += dt * 0.045;
-    globe.clouds.rotation.y += dt * 0.02;
+    globe.clouds.rotation.y += dt * 0.018;
 
     satAim.copy(camera.position).multiplyScalar(0.12);
     sat.position.lerp(new THREE.Vector3(1.35, 0.48, 1.7).add(satAim), 0.08);
@@ -138,16 +135,16 @@ export async function mountCinder(host: HTMLElement): Promise<void> {
       const energy = 52 * dt;
       const result = field.splat(hit.uv.x, hit.uv.y, energy);
       damageTex.needsUpdate = true;
-      aimBeam(laser.core, laser.glow, sat.position, hit.point);
+      const muzzle = new THREE.Vector3(0, -0.02, -0.18).applyQuaternion(sat.quaternion).add(sat.position);
+      aimBeam(laser.core, laser.glow, muzzle, hit.point);
       laser.impact.visible = true;
-      laser.impact.position.copy(hit.point).add(hitNormal.clone().multiplyScalar(0.02));
+      laser.impact.position.copy(hit.point).add(hitNormal.clone().multiplyScalar(0.03));
       laser.light.position.copy(hit.point);
       laser.light.intensity = 2.4 + result.peakHeat * 4;
-      const pulse = 0.04 + result.peakHeat * 0.05;
-      laser.impact.scale.setScalar(0.7 + Math.sin(clock.elapsedTime * 24) * 0.25 + result.peakHeat);
-      (laser.core.material as THREE.MeshBasicMaterial).opacity = 0.7 + pulse;
+      laser.impact.scale.setScalar(0.8 + Math.sin(clock.elapsedTime * 24) * 0.22 + result.peakHeat);
+      (laser.core.material as THREE.MeshBasicMaterial).opacity = 0.75 + result.peakHeat * 0.2;
       if (result.addedDamage > 0.35) {
-        debris.burst(hit.point, hitNormal, 12 + result.addedDamage * 8, result.peakHeat);
+        debris.burst(hit.point, hitNormal, 10 + result.addedDamage * 6, result.peakHeat);
       }
     } else {
       laser.core.visible = false;
@@ -163,11 +160,14 @@ export async function mountCinder(host: HTMLElement): Promise<void> {
     const wound = aim.damage;
     const heat = aim.heat;
     if (crustFill) crustFill.style.width = `${(wound * 100).toFixed(1)}%`;
-    if (crustVal) crustVal.textContent = `${(wound * 100).toFixed(1)}%`;
+    if (crustVal) crustVal.textContent = `${(wound * 100).toFixed(0)}%`;
     if (heatFill) heatFill.style.width = `${Math.min(100, heat * 100).toFixed(1)}%`;
     if (heatVal) heatVal.textContent = `${Math.min(100, heat * 100).toFixed(0)}%`;
+    if (goldVal) goldVal.textContent = Math.floor(field.totalEnergy * 18).toLocaleString("de-DE");
+    setDial(woundDial, wound);
+    setDial(heatDial, Math.min(1, heat));
     if (stats) {
-      stats.innerHTML = `Energie deponiert ${(field.totalEnergy * 4.2).toFixed(1)} MJ<br />Impulse ${field.craterEvents}`;
+      stats.innerHTML = `Energie ${(field.totalEnergy * 4.2).toFixed(1)} MJ<br />Impulse ${field.craterEvents}`;
     }
 
     renderer.render(scene, camera);
@@ -180,6 +180,12 @@ export async function mountCinder(host: HTMLElement): Promise<void> {
     camera.updateProjectionMatrix();
     renderer.setSize(host.clientWidth, host.clientHeight);
   });
+}
+
+function setDial(el: HTMLElement | null, t: number): void {
+  if (!el) return;
+  const p = Math.round(Math.min(1, Math.max(0, t)) * 100);
+  el.style.setProperty("--p", `${p}%`);
 }
 
 interface LaserAudio {

@@ -1,6 +1,6 @@
 # CINDER
 
-Orbital-Laser gegen die Erde. Die Kruste wird nicht per „Loch-Bool“ gelöscht, sondern **ablatiert**: der Strahl deponiert Energie, Hitze muss erst die Verdampfungsschwelle überschreiten, dann wächst ein Krater, die Schmelzpfanne weitet sich bei Dwell.
+Orbital-Laser gegen eine **Cel-Globe**: toon-shaded Cartoon-Erde (kein NASA-Foto), gold/teal UFO, dicker Laser. Die Kruste wird nicht per „Loch-Bool“ gelöscht, sondern **ablatiert**: der Strahl deponiert Energie, Hitze muss erst die Verdampfungsschwelle überschreiten, dann wächst ein Krater, die Schmelzpfanne weitet sich bei Dwell.
 
 ```bash
 npm install

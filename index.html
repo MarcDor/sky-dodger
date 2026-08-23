@@ -9,10 +9,10 @@
       body {
         margin: 0;
         height: 100%;
-        background: #02040a;
+        background: #071226;
         overflow: hidden;
-        color: #e8eef8;
-        font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+        color: #f4f1e4;
+        font-family: "Trebuchet MS", "Avenir Next", "Segoe UI", sans-serif;
       }
       #game {
         width: 100%;
@@ -25,102 +25,204 @@
         position: fixed;
         inset: 0;
         pointer-events: none;
-        text-shadow: 0 1px 8px #000;
+      }
+      .panel {
+        background: #0d3a42;
+        border: 5px solid #e0b23a;
+        border-radius: 22px;
+        box-shadow: 0 6px 0 #8a6414, 0 10px 24px rgba(0, 0, 0, 0.35);
       }
       #hud .tl {
         position: absolute;
-        top: 28px;
-        left: 32px;
+        top: 24px;
+        left: 28px;
+        padding: 12px 20px 14px;
       }
       #hud h1 {
         margin: 0;
-        font-size: 22px;
-        letter-spacing: 0.38em;
-        font-weight: 600;
-        color: #f4d2a6;
+        font-size: 26px;
+        letter-spacing: 0.28em;
+        font-weight: 800;
+        color: #ffe7a3;
       }
       #hud .sub {
-        margin-top: 6px;
+        margin-top: 4px;
         font-size: 13px;
-        letter-spacing: 0.08em;
-        color: #9aa8c2;
+        letter-spacing: 0.06em;
+        color: #9ee0d6;
       }
-      #hud .br {
+      #gold {
         position: absolute;
-        right: 32px;
-        bottom: 28px;
-        text-align: right;
-        font-size: 13px;
-        color: #b7c4da;
-        line-height: 1.6;
+        top: 24px;
+        right: 28px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 18px;
       }
-      #hud .bl {
-        position: absolute;
-        left: 32px;
-        bottom: 28px;
+      .coin {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #ffe27a, #e0b23a 55%, #a87a12);
+        border: 3px solid #fff3b0;
+        box-shadow: inset 0 -3px 0 #b8861a;
+      }
+      .coin::after {
+        content: "★";
+        display: block;
+        text-align: center;
+        line-height: 22px;
+        color: #8a6414;
         font-size: 13px;
-        color: #9aa8c2;
-        line-height: 1.55;
+      }
+      #gold .label {
+        font-size: 12px;
+        letter-spacing: 0.18em;
+        color: #ffe7a3;
+      }
+      #goldVal {
+        font-size: 22px;
+        font-weight: 800;
+        color: #fff8e4;
+        letter-spacing: 0.04em;
+      }
+      #dials {
+        position: absolute;
+        left: 28px;
+        bottom: 28px;
+        display: flex;
+        gap: 16px;
+      }
+      .dial-wrap {
+        width: 108px;
+        text-align: center;
+        padding: 10px 8px 8px;
+      }
+      .dial {
+        --p: 0%;
+        width: 78px;
+        height: 78px;
+        margin: 0 auto 6px;
+        border-radius: 50%;
+        background: conic-gradient(#ff7a32 0 var(--p), #163038 var(--p) 100%);
+        border: 6px solid #e0b23a;
+        box-shadow: inset 0 0 0 7px #0d3a42;
+        position: relative;
+      }
+      .dial.ice {
+        background: conic-gradient(#3dd6a0 0 var(--p), #163038 var(--p) 100%);
+      }
+      .dial::after {
+        content: "";
+        position: absolute;
+        inset: 14px;
+        border-radius: 50%;
+        background: #0d3a42;
+        border: 3px solid #e0b23a;
+      }
+      .dial-wrap span {
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        color: #ffe7a3;
+        font-weight: 700;
+      }
+      .dial-wrap b {
+        display: block;
+        margin-top: 2px;
+        color: #fff8e4;
       }
       #meters {
         position: absolute;
-        top: 28px;
-        right: 32px;
-        width: 220px;
+        right: 28px;
+        bottom: 28px;
+        width: 240px;
+        padding: 12px 14px 10px;
       }
       .meter {
-        margin-bottom: 12px;
+        margin-bottom: 8px;
       }
       .meter label {
         display: flex;
         justify-content: space-between;
         font-size: 11px;
         letter-spacing: 0.14em;
-        color: #c5d0e2;
-        margin-bottom: 5px;
+        color: #ffe7a3;
+        margin-bottom: 4px;
+        font-weight: 700;
       }
       .track {
-        height: 7px;
-        background: #141b28;
-        border: 1px solid #3a4658;
+        height: 12px;
+        background: #163038;
+        border: 3px solid #e0b23a;
         border-radius: 99px;
         overflow: hidden;
       }
       .fill {
         height: 100%;
         width: 0%;
-        background: linear-gradient(90deg, #c45c2a, #ffb03a);
+        background: linear-gradient(90deg, #ff4a18, #ffb03a);
       }
       .fill.ice {
-        background: linear-gradient(90deg, #2a6aa8, #8fd4ff);
+        background: linear-gradient(90deg, #1a8a78, #7ee8d8);
+      }
+      #stats {
+        margin-top: 6px;
+        text-align: right;
+        font-size: 12px;
+        color: #9ee0d6;
+        line-height: 1.45;
+      }
+      #hint {
+        position: absolute;
+        left: 50%;
+        bottom: 28px;
+        transform: translateX(-50%);
+        padding: 8px 16px;
+        font-size: 13px;
+        color: #9ee0d6;
+        letter-spacing: 0.03em;
       }
     </style>
   </head>
   <body>
     <div id="game"></div>
     <div id="hud">
-      <div class="tl">
+      <div class="tl panel">
         <h1>CINDER</h1>
-        <div class="sub">Orbital-Laser · Krustenablation</div>
+        <div class="sub">Cel-Globe · Orbital-Laser</div>
       </div>
-      <div id="meters">
+      <div id="gold" class="panel">
+        <div class="coin"></div>
+        <div>
+          <div class="label">GOLD</div>
+          <div id="goldVal">0</div>
+        </div>
+      </div>
+      <div id="dials">
+        <div class="dial-wrap panel">
+          <div class="dial ice" id="woundDial"></div>
+          <span>WUNDE</span>
+          <b id="crustVal">0%</b>
+        </div>
+        <div class="dial-wrap panel">
+          <div class="dial" id="heatDial"></div>
+          <span>HITZE</span>
+          <b id="heatVal">0%</b>
+        </div>
+      </div>
+      <div id="meters" class="panel">
         <div class="meter">
-          <label><span>WUNDE</span><span id="crustVal">0%</span></label>
-          <div class="track"><div id="crustFill" class="fill"></div></div>
+          <label><span>WUNDE</span><span id="crustFillLabel"></span></label>
+          <div class="track"><div id="crustFill" class="fill ice"></div></div>
         </div>
         <div class="meter">
-          <label><span>HITZE</span><span id="heatVal">0%</span></label>
+          <label><span>HITZE</span></label>
           <div class="track"><div id="heatFill" class="fill"></div></div>
         </div>
+        <div id="stats">Energie 0 MJ<br />Impulse 0</div>
       </div>
-      <div class="bl">
-        Linke Maustaste halten: feuern<br />
-        Rechte Maustaste: Orbit · Rad: Zoom
-      </div>
-      <div class="br" id="stats">
-        Energie deponiert 0 MJ<br />
-        Krater 0
-      </div>
+      <div id="hint" class="panel">LMB feuern · RMB Orbit · Rad Zoom</div>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>

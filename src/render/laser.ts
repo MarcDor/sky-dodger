@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { PAL } from "./palette";
 
 export function createLaser(): {
   core: THREE.Mesh;
@@ -6,28 +7,26 @@ export function createLaser(): {
   impact: THREE.Mesh;
   light: THREE.PointLight;
 } {
-  const coreGeo = new THREE.CylinderGeometry(0.006, 0.006, 1, 12, 1, true);
-  const glowGeo = new THREE.CylinderGeometry(0.024, 0.016, 1, 14, 1, true);
+  const coreGeo = new THREE.CylinderGeometry(0.012, 0.02, 1, 14, 1, true);
+  const glowGeo = new THREE.CylinderGeometry(0.038, 0.07, 1, 16, 1, true);
   coreGeo.translate(0, 0.5, 0);
   glowGeo.translate(0, 0.5, 0);
 
   const core = new THREE.Mesh(
     coreGeo,
     new THREE.MeshBasicMaterial({
-      color: 0xfff6d8,
+      color: PAL.laserHot,
       transparent: true,
       opacity: 0.95,
-      blending: THREE.AdditiveBlending,
       depthWrite: false,
     }),
   );
   const glow = new THREE.Mesh(
     glowGeo,
     new THREE.MeshBasicMaterial({
-      color: 0xff4e18,
+      color: PAL.laser,
       transparent: true,
-      opacity: 0.5,
-      blending: THREE.AdditiveBlending,
+      opacity: 0.72,
       depthWrite: false,
     }),
   );
@@ -35,18 +34,17 @@ export function createLaser(): {
   glow.visible = false;
 
   const impact = new THREE.Mesh(
-    new THREE.SphereGeometry(0.05, 16, 12),
+    new THREE.SphereGeometry(0.07, 16, 12),
     new THREE.MeshBasicMaterial({
-      color: 0xffc878,
+      color: 0xffc070,
       transparent: true,
-      opacity: 0.85,
-      blending: THREE.AdditiveBlending,
+      opacity: 0.9,
       depthWrite: false,
     }),
   );
   impact.visible = false;
 
-  const light = new THREE.PointLight(0xff7a30, 0, 1.8, 2);
+  const light = new THREE.PointLight(PAL.laser, 0, 2.2, 2);
   return { core, glow, impact, light };
 }
 
