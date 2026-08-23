@@ -13,9 +13,10 @@ export default defineConfig({
     port: 4173,
   },
   optimizeDeps: {
-    include: ["phaser"],
+    include: ["pixi.js"],
   },
   test: {
     environment: "node",
+    include: ["tests/**/*.test.ts"],
   },
 });
