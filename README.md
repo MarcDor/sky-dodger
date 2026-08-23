@@ -23,8 +23,8 @@ Das Spiel läuft unter [http://localhost:5173](http://localhost:5173).
 
 ## Steuerung
 
-- Station aus der linken Palette auf einen Ring-Slot ziehen
-- Auf den Ring (innere Nut) klicken: Tape-Loch an/aus
+- Station aus der linken Palette auf einen Ring-Slot ziehen (setzt das Tape-Bit an derselben Position)
+- Auf den Ring (innere Nut) oder die Wellenform klicken: Tape-Loch an/aus
 - Station vom Ring ziehen: entfernen
 - Play / Schritt / Tempo, oder Leertaste, `.` / Pfeil rechts, `1` `2` `3`
 

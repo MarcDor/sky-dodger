@@ -6,9 +6,9 @@
 - [x] Core + Unit-Tests
 - [x] 8 Level + Solver
 - [x] PixiJS-UI
-- [ ] Testlauf / Lint / Build grün
-- [ ] Browser-Verifikation mit Screenshot/Video
-- [ ] PROGRESS-Belege
+- [x] Testlauf / Lint / Build grün
+- [x] Browser-Verifikation mit Screenshot/Video
+- [x] PROGRESS-Belege
 
 ## Vollversion (nicht jetzt)
 

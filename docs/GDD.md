@@ -46,6 +46,8 @@ Mit einem Werkstück und `S` = Ringlänge fällt `tape[t mod S]` am Slot `p` mit
 
 `S` ist im Prototyp **pro Level fest** (Level-Feld `S`, zugleich `max. S`). Spieler-gewählte Tape-Länge wäre Vollversion; die Score-Achse „Tape-Länge“ zeigt trotzdem `S`.
 
+Platzieren einer Station setzt `tape[p] = true` (weiterhin toggelbar). Ohne das bleibt das Tutorial-Layout stumm, weil die Feuer-Regel beides verlangt.
+
 ### Werkstück-Modell
 
 Blueprint 2.4 mischt `holes += 1` und `holes[last].size`. Kanonisch hier:
