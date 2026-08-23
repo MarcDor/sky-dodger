@@ -14,7 +14,7 @@ export async function mountCinder(host: HTMLElement): Promise<void> {
   renderer.setSize(host.clientWidth, host.clientHeight);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.12;
+  renderer.toneMappingExposure = 1.35;
   host.appendChild(renderer.domElement);
 
   const scene = new THREE.Scene();
@@ -160,14 +160,14 @@ export async function mountCinder(host: HTMLElement): Promise<void> {
     controls.update();
 
     const aim = hit?.uv ? field.sample(hit.uv.x, hit.uv.y) : { damage: 0, heat: 0, crack: 0 };
-    const crust = 1 - aim.damage;
+    const wound = aim.damage;
     const heat = aim.heat;
-    if (crustFill) crustFill.style.width = `${(crust * 100).toFixed(1)}%`;
-    if (crustVal) crustVal.textContent = `${(crust * 100).toFixed(1)}%`;
+    if (crustFill) crustFill.style.width = `${(wound * 100).toFixed(1)}%`;
+    if (crustVal) crustVal.textContent = `${(wound * 100).toFixed(1)}%`;
     if (heatFill) heatFill.style.width = `${Math.min(100, heat * 100).toFixed(1)}%`;
     if (heatVal) heatVal.textContent = `${Math.min(100, heat * 100).toFixed(0)}%`;
     if (stats) {
-      stats.innerHTML = `Energie deponiert ${(field.totalEnergy * 4.2).toFixed(1)} MJ<br />Krater ${field.craterEvents}`;
+      stats.innerHTML = `Energie deponiert ${(field.totalEnergy * 4.2).toFixed(1)} MJ<br />Impulse ${field.craterEvents}`;
     }
 
     renderer.render(scene, camera);

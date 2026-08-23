@@ -42,7 +42,6 @@ void main() {
   N = normalize(T * nTex.x + B * nTex.y + N * nTex.z);
 
   vec3 day = texture2D(uDay, vUv).rgb;
-  day = pow(day, vec3(2.2));
   float ocean = texture2D(uSpec, vUv).r;
   float land = 1.0 - ocean;
   float ndl = dot(N, L);
@@ -50,8 +49,8 @@ void main() {
 
   vec3 night = day * 0.035 + vec3(0.01, 0.02, 0.05);
   float cities = land * pow(max(0.0, 1.0 - ndl), 4.0);
-  cities *= smoothstep(0.55, 0.85, fract(sin(dot(vUv * 80.0, vec2(12.7, 4.2))) * 43758.0));
-  night += vec3(1.0, 0.72, 0.35) * cities * 0.55;
+  cities *= smoothstep(0.82, 0.97, fract(sin(dot(vUv * 140.0, vec2(12.7, 4.2))) * 43758.0));
+  night += vec3(1.0, 0.72, 0.35) * cities * 0.28;
 
   vec3 color = mix(night, day * (0.12 + 0.88 * max(ndl, 0.0)), dayF);
 
@@ -83,7 +82,6 @@ void main() {
 
   color = mix(color, vec3(0.01, 0.0, 0.0), smoothstep(0.92, 1.0, crater) * 0.7);
 
-  color = pow(max(color, 0.0), vec3(1.0 / 2.2));
   gl_FragColor = vec4(color, 1.0);
 }
 `;

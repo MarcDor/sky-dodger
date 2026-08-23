@@ -94,17 +94,6 @@
       .fill.ice {
         background: linear-gradient(90deg, #2a6aa8, #8fd4ff);
       }
-      #cross {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        width: 18px;
-        height: 18px;
-        margin: -9px 0 0 -9px;
-        opacity: 0.35;
-        border: 1px solid #f4d2a6;
-        border-radius: 50%;
-      }
     </style>
   </head>
   <body>
@@ -116,8 +105,8 @@
       </div>
       <div id="meters">
         <div class="meter">
-          <label><span>KRUSTE</span><span id="crustVal">100%</span></label>
-          <div class="track"><div id="crustFill" class="fill ice"></div></div>
+          <label><span>WUNDE</span><span id="crustVal">0%</span></label>
+          <div class="track"><div id="crustFill" class="fill"></div></div>
         </div>
         <div class="meter">
           <label><span>HITZE</span><span id="heatVal">0%</span></label>
@@ -132,7 +121,6 @@
         Energie deponiert 0 MJ<br />
         Krater 0
       </div>
-      <div id="cross"></div>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
