@@ -67,8 +67,8 @@ export function mountCinder(host: HTMLElement): void {
   scene.add(key);
 
   const sat = createUfo(ramp);
-  sat.scale.setScalar(1.75);
-  sat.position.set(1.55, 0.62, 1.85);
+  sat.scale.setScalar(2.15);
+  sat.position.set(1.05, 0.22, 1.45);
   scene.add(sat);
 
   const laser = createLaser();
@@ -116,8 +116,8 @@ export function mountCinder(host: HTMLElement): void {
 
     planet.rotation.y += dt * 0.045;
 
-    satAim.copy(camera.position).multiplyScalar(0.12);
-    sat.position.lerp(new THREE.Vector3(1.35, 0.48, 1.7).add(satAim), 0.08);
+    satAim.copy(camera.position).multiplyScalar(0.1);
+    sat.position.lerp(new THREE.Vector3(1.02, 0.18, 1.38).add(satAim), 0.08);
     sat.lookAt(0, 0, 0);
 
     field.cool(dt);

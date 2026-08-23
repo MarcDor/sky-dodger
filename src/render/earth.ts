@@ -56,7 +56,7 @@ export function createEarth(pack: StylePack, damage: THREE.DataTexture): EarthBu
   const atmoMat = new THREE.ShaderMaterial({
     uniforms: {
       uSunDir: sunDir,
-      uIntensity: { value: 1.05 },
+      uIntensity: { value: 1.28 },
     },
     vertexShader: ATMO_VERT,
     fragmentShader: ATMO_FRAG,

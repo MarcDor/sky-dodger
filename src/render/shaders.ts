@@ -34,11 +34,10 @@ uniform vec3 uSunDir;
 uniform float uTime;
 
 float toonBand(float ndl) {
-  float w = fwidth(ndl) * 1.25;
-  float b0 = smoothstep(0.02 - w, 0.02 + w, ndl);
-  float b1 = smoothstep(0.32 - w, 0.32 + w, ndl);
-  float b2 = smoothstep(0.68 - w, 0.68 + w, ndl);
-  return mix(0.34, mix(0.52, mix(0.78, 1.08, b2), b1), b0);
+  float w = fwidth(ndl) * 1.1;
+  float mid = smoothstep(0.08 - w, 0.08 + w, ndl);
+  float lit = smoothstep(0.55 - w, 0.55 + w, ndl);
+  return mix(0.46, mix(0.74, 1.06, lit), mid);
 }
 
 void main() {
@@ -53,17 +52,20 @@ void main() {
   float inland = texture2D(uStyle, vUv).g;
   float ocean = 1.0 - land;
 
-  vec3 shadowTint = vec3(0.4, 0.46, 0.72);
-  vec3 sunTint = vec3(1.12, 1.06, 0.9);
+  vec3 shadowTint = vec3(0.48, 0.52, 0.78);
+  vec3 sunTint = vec3(1.1, 1.05, 0.92);
   vec3 color = albedo * mix(shadowTint, sunTint, band);
 
-  vec3 H = normalize(L + V);
-  float spec = pow(max(dot(N, H), 0.0), 160.0);
-  float specBlob = smoothstep(0.55, 0.82, spec);
-  color += specBlob * ocean * vec3(1.0, 0.98, 0.9) * 0.45;
+  float ink = smoothstep(0.18, 0.42, land) * (1.0 - smoothstep(0.48, 0.72, land));
+  color = mix(color, vec3(0.07, 0.22, 0.2), ink * 0.9);
 
-  float rim = pow(1.0 - max(dot(N, V), 0.0), 2.6);
-  color += vec3(0.65, 0.92, 1.0) * rim * 0.42 * (0.35 + 0.65 * band);
+  vec3 H = normalize(L + V);
+  float spec = pow(max(dot(N, H), 0.0), 180.0);
+  float specBlob = smoothstep(0.6, 0.86, spec);
+  color += specBlob * ocean * vec3(1.0, 0.98, 0.9) * 0.35;
+
+  float rim = pow(1.0 - max(dot(N, V), 0.0), 2.4);
+  color += vec3(0.75, 0.95, 1.0) * rim * 0.5 * (0.4 + 0.6 * band);
 
   float outline = pow(1.0 - max(dot(N, V), 0.0), 8.0);
   color = mix(color, vec3(0.07, 0.14, 0.24), outline * 0.85);
