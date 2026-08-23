@@ -2,22 +2,17 @@
 <html lang="de" translate="no">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
-    />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="google" content="notranslate" />
-    <title>Sky Dodger</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CINDER</title>
     <style>
       html,
       body {
         margin: 0;
         height: 100%;
-        background: #f7d6e0;
+        background: #02040a;
         overflow: hidden;
-        touch-action: none;
-        font-family: "Kenney Future Narrow", "Trebuchet MS", sans-serif;
+        color: #e8eef8;
+        font-family: "Segoe UI", Helvetica, Arial, sans-serif;
       }
       #game {
         width: 100%;
@@ -26,10 +21,119 @@
       canvas {
         display: block;
       }
+      #hud {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        text-shadow: 0 1px 8px #000;
+      }
+      #hud .tl {
+        position: absolute;
+        top: 28px;
+        left: 32px;
+      }
+      #hud h1 {
+        margin: 0;
+        font-size: 22px;
+        letter-spacing: 0.38em;
+        font-weight: 600;
+        color: #f4d2a6;
+      }
+      #hud .sub {
+        margin-top: 6px;
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        color: #9aa8c2;
+      }
+      #hud .br {
+        position: absolute;
+        right: 32px;
+        bottom: 28px;
+        text-align: right;
+        font-size: 13px;
+        color: #b7c4da;
+        line-height: 1.6;
+      }
+      #hud .bl {
+        position: absolute;
+        left: 32px;
+        bottom: 28px;
+        font-size: 13px;
+        color: #9aa8c2;
+        line-height: 1.55;
+      }
+      #meters {
+        position: absolute;
+        top: 28px;
+        right: 32px;
+        width: 220px;
+      }
+      .meter {
+        margin-bottom: 12px;
+      }
+      .meter label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11px;
+        letter-spacing: 0.14em;
+        color: #c5d0e2;
+        margin-bottom: 5px;
+      }
+      .track {
+        height: 7px;
+        background: #141b28;
+        border: 1px solid #3a4658;
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #c45c2a, #ffb03a);
+      }
+      .fill.ice {
+        background: linear-gradient(90deg, #2a6aa8, #8fd4ff);
+      }
+      #cross {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 18px;
+        height: 18px;
+        margin: -9px 0 0 -9px;
+        opacity: 0.35;
+        border: 1px solid #f4d2a6;
+        border-radius: 50%;
+      }
     </style>
   </head>
   <body>
     <div id="game"></div>
+    <div id="hud">
+      <div class="tl">
+        <h1>CINDER</h1>
+        <div class="sub">Orbital-Laser · Krustenablation</div>
+      </div>
+      <div id="meters">
+        <div class="meter">
+          <label><span>KRUSTE</span><span id="crustVal">100%</span></label>
+          <div class="track"><div id="crustFill" class="fill ice"></div></div>
+        </div>
+        <div class="meter">
+          <label><span>HITZE</span><span id="heatVal">0%</span></label>
+          <div class="track"><div id="heatFill" class="fill"></div></div>
+        </div>
+      </div>
+      <div class="bl">
+        Linke Maustaste halten: feuern<br />
+        Rechte Maustaste: Orbit · Rad: Zoom
+      </div>
+      <div class="br" id="stats">
+        Energie deponiert 0 MJ<br />
+        Krater 0
+      </div>
+      <div id="cross"></div>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

@@ -1,7 +1,7 @@
 {
-  "name": "sky-dodger",
+  "name": "cinder",
   "version": "0.1.0",
-  "description": "Sky Dodger — a kawaii doodle arcade game built with Phaser 3.",
+  "description": "Cinder — orbital laser vs. Earth. Progressive crust ablation.",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -12,10 +12,11 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "phaser": "3.90.0"
+    "three": "^0.170.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",
+    "@types/three": "^0.170.0",
     "eslint": "^9.15.0",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.15.0",

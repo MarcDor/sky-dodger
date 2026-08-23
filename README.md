@@ -1,37 +1,18 @@
-# Sky Dodger
+# CINDER
 
-Kawaii-Doodle-Arcade im Browser: weiche den fallenden Wolken, Sternen und Tropfen aus, so lange du kannst.
-
-Gebaut mit **Phaser 3** (3.90). Kein Backend nötig — `index.html` ist der Einstiegspunkt.
-
-## Entwicklung
+Orbital-Laser gegen die Erde. Die Kruste wird nicht per „Loch-Bool“ gelöscht, sondern **ablatiert**: der Strahl deponiert Energie, Hitze muss erst die Verdampfungsschwelle überschreiten, dann wächst ein Krater, die Schmelzpfanne weitet sich bei Dwell.
 
 ```bash
 npm install
 npm run dev
 ```
 
-Das Spiel läuft unter [http://localhost:5173](http://localhost:5173). Vite liefert Hot Reload.
+[http://localhost:5173](http://localhost:5173)
 
-| Befehl | Zweck |
+| | |
 | --- | --- |
-| `npm run dev` | lokaler Dev-Server |
-| `npm run lint` | ESLint |
-| `npm test` | Vitest (Schwierigkeit, Kollision, Score) |
-| `npm run build` | TypeScript-Check + Production-Bundle |
+| Linke Maustaste halten | Laser |
+| Rechte Maustaste ziehen | Orbit |
+| Mausrad | Zoom |
 
-## Steuerung
-
-- Desktop: Pfeiltaste links / rechts
-- Mobile: Finger auf dem Bildschirm halten und ziehen
-- Start und Neustart: Tippen oder Klicken irgendwo, oder den Kenney-Button
-
-## Ordner
-
-- `src/` — Spiellogik, Szenen, UI-Helfer
-- `assets/` — eigene SVGs und ausgewählte Kenney-Dateien (siehe `ASSETS.md`)
-- `index.html` — HTML-Einstieg
-
-## Lizenz der Third-Party-Grafiken
-
-Kenney-Packs stehen unter CC0. Details in `ASSETS.md`.
+`npm test` prüft Ray-Sphere, UV-Wrap über die Datumsgrenze, Hitze→Krater, Abkühlung.
