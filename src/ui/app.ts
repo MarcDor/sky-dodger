@@ -470,20 +470,20 @@ export async function mountLockstep(host: HTMLElement): Promise<void> {
 
   function drawWorkpiece(cx: number, cy: number, r: number): void {
     gfx.piece.clear();
+    const wp = run.workpiece;
+    if (!wp) return;
     const S = level().S;
     const from = slotAngle(prevSlot, S);
     const to = slotAngle(displaySlot, S);
     const a = lerpAngle(from, to, ease(anim));
     const x = cx + Math.cos(a) * (r - 28);
     const y = cy + Math.sin(a) * (r - 28);
-    const wp = run.workpiece;
     gfx.piece.roundRect(x - 16, y - 16, 32, 32, 8);
     gfx.piece.fill({ color: COLORS.workpiece });
     gfx.piece.roundRect(x - 16, y - 16, 32, 32, 8);
     gfx.piece.stroke({ width: 2, color: COLORS.brassLo });
     gfx.piece.ellipse(x - 5, y - 7, 10, 5);
     gfx.piece.fill({ color: 0xffffff, alpha: 0.28 });
-    if (!wp) return;
     wp.holes.forEach((hole, i) => {
       gfx.piece.circle(x - 8 + i * 10, y + 4, 2 + hole.size);
       gfx.piece.fill({ color: COLORS.groove });
