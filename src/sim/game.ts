@@ -109,7 +109,7 @@ export function makeUfo(id: number): Ufo {
     wobble: 0.025 + r(5) * 0.055,
     wobbleSpeed: 1.05 + r(6) * 1.6,
     cooldown: 0.15 + r(7) * 0.55,
-    period: 0.85 + r(8) * 0.45,
+    period: 1.15 + r(8) * 0.5,
   };
 }
 
@@ -188,7 +188,7 @@ function fire(game: Game, view: View, ufo: Ufo): void {
   const y = Math.sin(a) * rad;
   const hitX = view.cx + x;
   const hitY = view.cy + y;
-  const size = 22 + Math.random() * 14;
+  const size = 28 + Math.random() * 16;
 
   game.shots.push({ x0: from.x, y0: from.y, x1: hitX, y1: hitY, life: 0.18 });
   game.breaks.push({ x, y, r: size });

@@ -19,8 +19,8 @@ export function drawBackdrop(g: Graphics, w: number, h: number, stars: { x: numb
 export function drawPlanetHalo(g: Graphics, view: View): void {
   g.clear();
   const { cx, cy, r } = view;
-  g.circle(cx, cy, r + 26);
-  g.fill({ color: C.atmo, alpha: 0.28 });
+  g.circle(cx, cy, r + 14);
+  g.stroke({ width: 18, color: C.atmo, alpha: 0.5 });
   g.ellipse(cx + 8, cy + r + 14, r * 0.72, r * 0.16);
   g.fill({ color: C.ink, alpha: 0.18 });
 }

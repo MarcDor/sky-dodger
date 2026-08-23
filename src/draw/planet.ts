@@ -124,6 +124,28 @@ export class PlanetSurface {
     ctx.restore();
     return stamps;
   }
+
+  /** Fraction of the disc that still has paint. Used for the PLANET meter. */
+  remaining(): number {
+    const ctx = this.ctx;
+    if (!ctx || this.radius <= 0) return 1;
+    const { width, height } = this.canvas;
+    const data = ctx.getImageData(0, 0, width, height).data;
+    const mid = width / 2;
+    const r2 = this.radius * this.radius;
+    let solid = 0;
+    let total = 0;
+    for (let y = 0; y < height; y += 3) {
+      for (let x = 0; x < width; x += 3) {
+        const dx = x - mid;
+        const dy = y - mid;
+        if (dx * dx + dy * dy > r2) continue;
+        total += 1;
+        if (data[(y * width + x) * 4 + 3] > 20) solid += 1;
+      }
+    }
+    return total === 0 ? 1 : solid / total;
+  }
 }
 
 function extractChunk(src: HTMLCanvasElement, cx: number, cy: number, r: number): HTMLCanvasElement | null {

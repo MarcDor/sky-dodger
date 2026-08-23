@@ -1,7 +1,7 @@
 import { Application, Container, Graphics, Sprite, Texture } from "pixi.js";
 import { PlanetSurface } from "./draw/planet";
 import { drawBackdrop, drawPlanetHalo, drawUfos, drawVfx } from "./draw/scene";
-import { buyUfo, createGame, incomePerSecond, step, ufoCost, wound } from "./sim/game";
+import { buyUfo, createGame, incomePerSecond, step, ufoCost } from "./sim/game";
 
 interface FlyBit {
   sprite: Sprite;
@@ -103,10 +103,10 @@ export async function mountCinder(host: HTMLElement): Promise<void> {
         const spread = out + (Math.random() - 0.5) * 0.9;
         flying.push({
           sprite: spr,
-          vx: Math.cos(spread) * spd,
-          vy: Math.sin(spread) * spd,
+          vx: Math.cos(spread) * spd * 0.75,
+          vy: Math.sin(spread) * spd * 0.75,
           spin: (Math.random() - 0.5) * 9,
-          life: 1.15 + Math.random() * 0.55,
+          life: 1.8 + Math.random() * 0.6,
         });
       }
     }
@@ -134,10 +134,10 @@ export async function mountCinder(host: HTMLElement): Promise<void> {
     drawVfx(vfx, game.shots, game.booms, game.chips, game.cracks);
     drawUfos(ships, game, view);
 
-    const wnd = wound(game, view.r);
+    const left = surface.remaining();
     if (goldVal) goldVal.textContent = Math.floor(game.gold).toLocaleString("de-DE");
-    if (planetVal) planetVal.textContent = `${Math.round((1 - wnd) * 100)}%`;
-    if (planetFill) planetFill.style.width = `${Math.max(0, (1 - wnd) * 100)}%`;
+    if (planetVal) planetVal.textContent = `${Math.round(left * 100)}%`;
+    if (planetFill) planetFill.style.width = `${Math.max(0, left * 100)}%`;
     if (ufoVal) ufoVal.textContent = String(game.ufos.length);
     if (incomeVal) incomeVal.textContent = `+${incomePerSecond(game).toFixed(0)}/s`;
     if (shotsVal) shotsVal.textContent = String(game.shotsFired);
